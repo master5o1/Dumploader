@@ -1,0 +1,13 @@
+p Name: #{file.name}
+p Date uploaded: #{file.date}
+p MD5 sum: #{file.md5}
+p Size in bytes: #{file.length}
+p Content type: #{file.type}
+p Info URL: 
+  a(href="/info/#{file.id}/#{file.name}") /info/#{file.id}/#{file.name}
+p View URL:
+  a(href="/view/#{file.id}/#{file.name}") /view/#{file.id}/#{file.name}
+if image == "true"
+  br
+  br
+  img.uploaded_image(src="/view/#{file.id}/#{file.name}")

@@ -1,0 +1,8 @@
+p List of links:
+
+each item in link_list
+  a(href="/link/#{item.link_id}/info") info
+  span &nbsp;for&nbsp;
+  a(href="/link/#{item.link_id}") #{item.link_url}
+  span &nbsp;Created on: #{item.created}
+  br

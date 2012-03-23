@@ -1,0 +1,12 @@
+p Info URL: 
+  br
+  a(href="/info/#{file_id}/#{file_name}") /info/#{file_id}/#{file_name}
+  br
+  a(href="/info/#{file_id}") /info/#{file_id}
+p View URL:
+  br
+  a(href="/view/#{file_id}/#{file_name}") /view/#{file_id}/#{file_name}
+  br
+  a(href="/view/#{file_id}") /view/#{file_id}
+if image == "true"
+  img.uploaded_image(src="/view/#{file_id}/#{file_name}")
