@@ -67,12 +67,10 @@ exports.info = function(req, res){
  */
 exports.view = function(req, res){
     var file_id = parseInt(req.params.id, 36);
-    storage.gridfs.findOne({_id: file_id}, function (err, file) {
-        if (!err && file) {
-            var stream = file.readStream()
-            stream.pipe(res)
-        }
-    })
+    storage.get_file(file_id, function(file) {
+        var stream = file.readStream()
+        stream.pipe(res)
+    });
 };
 
 /*

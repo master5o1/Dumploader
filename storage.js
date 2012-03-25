@@ -10,7 +10,7 @@ exports.db = db;
 exports.add_file = function(uploaded_file, callback) {
     db.collection('fs.files').count(function(err, value){
         var file = gridfs.create({
-            _id: (new Date()).getTime(), // (1 + value), // May not be Atomic but it works, I guess.
+            _id: (new Date()).getTime(), // May not be Atomic but it works, I guess.
             filename: uploaded_file.name,
             contentType: uploaded_file.type,
         })
@@ -20,11 +20,19 @@ exports.add_file = function(uploaded_file, callback) {
     });
 }
 
+exports.get_file = function(file_id, callback) {
+    gridfs.findOne({_id: file_id}, function (err, file) {
+        if (!err && file) {
+            callback(file);
+        }
+    })
+}
+
 
 exports.add_paste = function(paste, callback) {
     db.collection('fs.files').count(function(err, value){
         var file = gridfs.create({
-            _id: (new Date()).getTime(), // (1 + value), // May not be Atomic but it works, I guess.
+            _id: (new Date()).getTime(), // May not be Atomic but it works, I guess.
             filename: paste.name + '.txt',
             contentType: 'text/plain',
         })

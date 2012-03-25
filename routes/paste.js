@@ -33,5 +33,12 @@ exports.handler = function(req, res) {
  * GET /paste/:id/:name?
  */
 exports.view = function(req, res) {
-    res.send("VIEW PASTEBIN? " + req.params.id + ' ' + parseInt(req.params.id, 36));
+    var file_id = parseInt(req.params.id, 36);
+    storage.get_file(file_id, function(file) {
+        if ((file.contentType.split('/')[0] == 'text') ? true : false) {
+            res.send("OKAY PASTEBIN FOR: id=" + file_id + " base36=" + req.params.id)
+        } else {
+            res.send("NOPE DIS NOT TEXT.  Try /view/:id instead of /paste/:id")
+        }
+    });
 };
