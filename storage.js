@@ -20,6 +20,26 @@ exports.add_file = function(uploaded_file, callback) {
     });
 }
 
+
+exports.add_paste = function(paste, callback) {
+    db.collection('fs.files').count(function(err, value){
+        var file = gridfs.create({
+            _id: (new Date()).getTime(), // (1 + value), // May not be Atomic but it works, I guess.
+            filename: paste.name + '.txt',
+            contentType: 'text/plain',
+        })
+        var stream = file.writeStream()
+        fs.writeFile("/tmp/paste-" + file._id.toString(36), paste.text, function(err) {
+            if (err) throw err;
+            fs.createReadStream("/tmp/paste-" + file._id.toString(36)).pipe(stream);
+            console.log(file);
+            fs.unlink("/tmp/paste-" + file._id.toString(36));
+            console.log(file);
+            callback(file);
+        })
+    });
+}
+
 exports.add_link = function(link_url, callback) {
     var links = db.collection('links');
     links.count(function(error, value) {

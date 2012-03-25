@@ -12,3 +12,8 @@ img.uploaded_image { max-width: 500px; }
 div.copyright {
     margin: 50px 0 10px 0;
 }
+
+span.error {
+    color: #ff9494;
+    font-weight: bold;
+}

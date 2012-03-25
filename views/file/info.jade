@@ -1,13 +1,25 @@
-p Name: #{file.name}
-p Date uploaded: #{file.date}
-p MD5 sum: #{file.md5}
-p Size in bytes: #{file.length}
-p Content type: #{file.type}
-p Info URL: 
-  a(href="/info/#{file.id}/#{file.name}") /info/#{file.id}/#{file.name}
-p View URL:
-  a(href="/view/#{file.id}/#{file.name}") /view/#{file.id}/#{file.name}
+dl
+    dt Name:
+    dd= file.name
+    dt Date uploaded:
+    dd= file.date
+    dt MD5 sum:
+    dd= file.md5
+    dt Size in bytes:
+    dd= file.length
+    dt Content type:
+    dd= file.type
+    dt Info URL:
+    dd
+        a(href="/info/#{file.id}/#{file.name}") #{host}/info/#{file.id}/#{file.name}
+    dt View URL:
+    dd
+        a(href="/view/#{file.id}/#{file.name}") #{host}/view/#{file.id}/#{file.name}
+    if paste == "true"
+        dt Paste URL:
+        dd
+            a(href="/paste/#{file.id}") #{host}/paste/#{file.id}/#{file.name}
 if image == "true"
-  br
-  br
-  img.uploaded_image(src="/view/#{file.id}/#{file.name}")
+    dt Image:
+        dd
+            img.uploaded_image(src="/view/#{file.id}/#{file.name}")

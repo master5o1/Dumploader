@@ -1,6 +1,8 @@
 dl
-    dt URL:
+    dt URL: 
     dd
+        a(href="/link/#{link.link_id}") #{host}/link/#{link.link_id}
+        span &nbsp;-&gt;&nbsp;
         a(href="/link/#{link.link_id}") #{link.link_url}
     dt Created:
     dd= link.created

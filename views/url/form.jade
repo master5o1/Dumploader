@@ -2,3 +2,5 @@ form(action="/link", method="post", enctype="multipart/form-data")
   span Link URL: 
   input(type="text", name="link_url")
   input(type="submit", name="submit_link")
+  if show_error == 'true'
+      span.error #{error}

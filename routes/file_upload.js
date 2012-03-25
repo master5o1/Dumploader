@@ -4,7 +4,6 @@ var storage = require('../storage');
 /*
  * GET /upload
  */
-
 exports.form = function(req, res){
     res.render('file/form', {
         title: 'dumploader',
@@ -30,6 +29,7 @@ exports.upload = function(req, res) {
                     image: (file.contentType.split('/')[0] == 'image') ? 'true' : 'false',
                     file_id: file._id.toString(36),
                     file_name: file.filename,
+                    host: req.headers.host,
                 });
             });
         }
@@ -47,14 +47,16 @@ exports.info = function(req, res){
                 title: 'dumploader',
                 tagline: 'Information on file.',
                 image: ((file.contentType.split('/')[0] == 'image') ? 'true' : 'false'),
+                paste: ((file.contentType.split('/')[0] == 'text') ? 'true' : 'false'),
                 file: {
                     name: file.filename,
                     id: file._id.toString(36),
                     date: file.uploadDate,
                     md5: file.md5,
                     length: file.length,
-                    type: file.contentType
-                }
+                    type: file.contentType,
+                },
+                host: req.headers.host,
             });
         }
     })
@@ -89,6 +91,7 @@ exports.list = function(req, res){
             title: 'dumploader',
             tagline: 'Do you recognise any of these?',
             file_list: file_list,
+            host: req.headers.host,
         });
     });
 };

@@ -1,8 +1,6 @@
-
 /**
  * Module dependencies.
  */
-
 var express = require('express')
   , routes = require('./routes')
   , storage = require('./storage')
@@ -51,7 +49,13 @@ app.get('/link/:id', routes.link.redirect);
 app.get('/link/:id/info', routes.link.info);
 app.get('/list/links/:limit?', routes.link.list);
 
-app.get('/about', routes.about);
+// Paste
+app.get('/paste', routes.paste.form);
+app.post('/paste', routes.paste.handler);
+app.get('/paste/:id/:name?', routes.paste.view);
+
+// Other pages
+app.get('/about', routes.pages.about);
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

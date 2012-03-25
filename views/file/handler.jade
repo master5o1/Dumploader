@@ -1,12 +1,17 @@
-p Info URL: 
-  br
-  a(href="/info/#{file_id}/#{file_name}") /info/#{file_id}/#{file_name}
-  br
-  a(href="/info/#{file_id}") /info/#{file_id}
-p View URL:
-  br
-  a(href="/view/#{file_id}/#{file_name}") /view/#{file_id}/#{file_name}
-  br
-  a(href="/view/#{file_id}") /view/#{file_id}
+dl
+    dt Info URL: 
+    dd
+        a(href="/info/#{file_id}/#{file_name}") #{host}/info/#{file_id}/#{file_name}
+    dt Short info URL: 
+    dd
+        a(href="/info/#{file_id}") #{host}/info/#{file_id}
+    dt View URL: 
+    dd
+        a(href="/view/#{file_id}/#{file_name}") #{host}/view/#{file_id}/#{file_name}
+    dt Short view URL: 
+    dd
+        a(href="/view/#{file_id}") #{host}/view/#{file_id}
 if image == "true"
-  img.uploaded_image(src="/view/#{file_id}/#{file_name}")
+    dt Image:
+        dd
+            img.uploaded_image(src="/view/#{file_id}/#{file_name}")
