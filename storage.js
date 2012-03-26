@@ -54,16 +54,24 @@ exports.add_link = function(link_url, callback) {
             link_id: link_id,
             link_url: link_url,
             created: new Date,
+            hits: 0,
         }
         links.insert(link);
         callback(link);
     });
 }
 
-exports.get_link = function(link_id, callback) {
+exports.get_link = function(link_id, redirect, callback) {
     var links = db.collection('links');
-    links.findOne({ link_id: link_id }, function(err, link) {
-        link = { link_id: link.link_id, link_url: link.link_url, created: link.created };
-        callback(link);
-    });
+    if (redirect) {
+        links.findAndModify( {query: {link_id:link_id}, update : {"$inc":{"hits":1}}, 'new': true}, function (err, link) {
+            link = { link_id: link.link_id, link_url: link.link_url, created: link.created };
+            callback(link);
+        });
+    } else {
+        links.findOne({ link_id: link_id }, function(err, link) {
+            link = { link_id: link.link_id, link_url: link.link_url, created: link.created, hits: link.hits };
+            callback(link);
+        });
+    }
 }

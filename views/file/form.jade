@@ -6,3 +6,9 @@ div.uploadform
         input(type="submit", name="submit_file")
     div.info
         p Accepts any file. Some more info, etc.
+if featured_images.length > 0
+    div.featured-images
+        h2 Last Five Images
+        each image in featured_images
+            a(href="/info/#{image.id}/#{image.name}")
+                img(src="/view/#{image.id}/#{image.name}")

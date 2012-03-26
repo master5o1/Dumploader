@@ -3,6 +3,7 @@ table.list
         tr
             td.name Target
             td.info Info
+            td.info Hits
             td.date Date
     tbody
         each item, i in link_list
@@ -12,6 +13,7 @@ table.list
                         a(href="/link/#{item.link_id}") #{item.link_url}
                     td.info
                         a(href="/link/#{item.link_id}/info") info
+                    td.info= item.hits
                     td.date= item.created
             else
                 tr
@@ -19,4 +21,5 @@ table.list
                         a(href="/link/#{item.link_id}") #{item.link_url}
                     td.info
                         a(href="/link/#{item.link_id}/info") info
+                    td.info= item.hits
                     td.date= item.created

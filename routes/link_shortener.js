@@ -42,8 +42,9 @@ exports.handler = function(req, res){
  */
 exports.info = function(req, res){
     if (req.params.id == 0) { res.redirect('/link'); }
-    storage.get_link(parseInt(req.params.id, 36), function(link) {
+    storage.get_link(parseInt(req.params.id, 36), false, function(link) {
         link.link_id = link.link_id.toString(36);
+        link.hits = link.hits || 0;
         res.render('url/info', {
             title: 'dumploader',
             tagline: "Short Link Information",
@@ -58,7 +59,7 @@ exports.info = function(req, res){
  */
 exports.redirect = function(req, res){
     if (req.params.id == 0) { res.redirect('/link'); }
-    storage.get_link(parseInt(req.params.id, 36), function(link) {
+    storage.get_link(parseInt(req.params.id, 36), true, function(link) {
         res.redirect(link.link_url);
     });
 };
@@ -69,11 +70,21 @@ exports.redirect = function(req, res){
 exports.list = function(req, res){
     var limit = req.params.limit;
     
-    link_list = storage.db.collection('links').find({}, {link_id: 1, link_url: 1, created: 1}).sort({_id: -1}).limit(limit);
+    link_list = storage.db.collection('links').find({}, {link_id: 1, link_url: 1, created: 1, hits: 1}).sort({_id: -1}).limit(limit);
     link_list.toArray(function(err, value){
         var link_list = [];
         value.forEach(function(element){
-            this.push({link_id: element.link_id.toString(36), link_url: element.link_url, created: element.created});
+            element.created = (function(uploadDate){
+            var element = {uploadDate: uploadDate};
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()-1] + ' '
+                    + element.uploadDate.getUTCFullYear() + ' '
+                    + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
+                    + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
+                    + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
+            return date;
+            })(element.created);
+            this.push({link_id: element.link_id.toString(36), link_url: element.link_url, created: element.created, hits: element.hits || 0});
         }, link_list);
         res.render('url/list', {
             title: 'dumploader',

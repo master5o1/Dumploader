@@ -5,10 +5,27 @@ var storage = require('../storage');
  * GET /upload
  */
 exports.form = function(req, res){
-    res.render('file/form', {
-        title: 'dumploader',
-        tagline: 'Dump It Here',
-    })
+    if (false) { // off by defualt because it loads full size images coz I haven't got thumbnails sorted.
+        file_list = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1}).sort({uploadDate: -1}).limit(5);
+        file_list.toArray(function(err, value){
+            var images = [];
+            value.forEach(function(element){
+                this.push({id: element._id.toString(36), name: element.filename});
+            }, images);
+            res.render('file/form', {
+                title: 'dumploader',
+                tagline: 'Dump It Here',
+                featured_images: images,
+            })
+        });
+    } else {
+        var images = [];
+        res.render('file/form', {
+            title: 'dumploader',
+            tagline: 'Dump It Here',
+            featured_images: images,
+        })
+    }
 };
 
 /*
@@ -103,6 +120,16 @@ exports.list = function(req, res){
                 }
                 return parseInt(size*100)/100 + ' ' + units.shift() + 'iB';
             })(element.length);
+            element.uploadDate = (function(uploadDate){
+            var element = {uploadDate: uploadDate};
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()-1] + ' '
+                    + element.uploadDate.getUTCFullYear() + ' '
+                    + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
+                    + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
+                    + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
+            return date;
+            })(element.uploadDate);
             this.push({file_id: element._id.toString(36), file_name: element.filename, file_date: element.uploadDate, file_size: file_size});
         }, file_list);
         res.render('file/list', {

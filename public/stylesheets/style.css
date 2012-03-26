@@ -123,6 +123,57 @@ div.uploadform {
     background: #eeeeee;
 }
 
+div.featured-images h2 {
+    text-align: left;
+    font-variant: small-caps;
+    margin: 0;
+    padding: 0 0.25em;
+    line-height: 30px;
+    height: 25px;
+    color: white;
+    border: solid 1px #00B7FF;
+    border-bottom: none;
+    background-color: #00B7FF;
+    background-image: -webkit-gradient(linear, 0 0, 100% 100%,
+                                                    color-stop(.25, rgba(255, 255, 255, .2)), color-stop(.25, transparent),
+                                                    color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .2)),
+                                                    color-stop(.75, rgba(255, 255, 255, .2)), color-stop(.75, transparent),
+                                                    to(transparent));
+    background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-image: -ms-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-image: -o-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-image: linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-size: 25px 25px;
+}
+
+div.featured-images {
+    background: #eee;
+    border: solid 1px #00b7ff;
+    border-top: none;
+    text-align: center;
+}
+
+div.featured-images img {
+    margin: 10px;
+    vertical-align: middle;
+    display: inline-block;
+    max-height: 100px;
+    width: 150px;
+    overflow: hidden;
+    background: #f0f;
+}
+
 div.linkform input[type="text"] {
     width: 610px;
     margin: 1px 0 0 0;
