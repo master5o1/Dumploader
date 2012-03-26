@@ -6,7 +6,7 @@ It is modelled after and loosely clones [Omploader](http://omploader.org/).
 
 Licence
 -------
-Copyright (c) 2012 Jason Schwarzenberger
+Copyright (c) 2012 [Jason Schwarzenberger](http://master5o1.com/)
 Dumploader is licensed under the GNU Affero General Public License version 3.
 License text: http://www.gnu.org/licenses/agpl-3.0.html
 
