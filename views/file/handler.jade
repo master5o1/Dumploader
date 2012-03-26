@@ -1,4 +1,4 @@
-dl
+dl.file-info
     dt Info URL: 
     dd
         a(href="/info/#{file_id}/#{file_name}") #{host}/info/#{file_id}/#{file_name}
@@ -11,7 +11,7 @@ dl
     dt Short view URL: 
     dd
         a(href="/view/#{file_id}") #{host}/view/#{file_id}
-if image == "true"
-    dt Image:
-        dd
-            img.uploaded_image(src="/view/#{file_id}/#{file_name}")
+    if image == "true"
+    dt.img Image:
+    dd.img
+        img.uploaded_image(src="/view/#{file_id}/#{file_name}")

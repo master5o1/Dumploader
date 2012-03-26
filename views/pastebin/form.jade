@@ -1,8 +1,15 @@
-form(action="/paste", method="post", enctype="multipart/form-data")
-    div Title:
-        br
-        input(type="text", name="pasted_title")
-    div Paste text:
-        br
-        textarea(name="pasted_text")
-        input(type="submit", name="submit_paste")
+div.pasteform
+    form(action="/paste", method="post", enctype="multipart/form-data")
+        div Title:
+            br
+            input(type="text", name="pasted_title")
+            select(name="pasted_type", disabled="disabled")
+                option(value="txt", selected="selected") TXT
+                option(value="c") C
+                option(value="php") PHP
+        div Paste text:
+            br
+            textarea(name="pasted_text")
+            input(type="submit", name="submit_paste")
+            if show_error == 'true'
+                span.error #{error}

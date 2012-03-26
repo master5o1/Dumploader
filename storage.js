@@ -40,9 +40,7 @@ exports.add_paste = function(paste, callback) {
         fs.writeFile("/tmp/paste-" + file._id.toString(36), paste.text, function(err) {
             if (err) throw err;
             fs.createReadStream("/tmp/paste-" + file._id.toString(36)).pipe(stream);
-            console.log(file);
             fs.unlink("/tmp/paste-" + file._id.toString(36));
-            console.log(file);
             callback(file);
         })
     });

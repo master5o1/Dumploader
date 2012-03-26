@@ -14,7 +14,7 @@ exports.form = function(req, res){
     }
     res.render('url/form', {
         title: 'dumploader',
-        tagline: "Sometimes it's just a little too big.",
+        tagline: "Sometimes It's Just a Little Too Big",
         show_error: show_error,
         error: error,
     })
@@ -46,7 +46,7 @@ exports.info = function(req, res){
         link.link_id = link.link_id.toString(36);
         res.render('url/info', {
             title: 'dumploader',
-            tagline: "Short link information.",
+            tagline: "Short Link Information",
             link: link,
             host: req.headers.host,
         })
@@ -77,7 +77,7 @@ exports.list = function(req, res){
         }, link_list);
         res.render('url/list', {
             title: 'dumploader',
-            tagline: "Hope these aren't rotten",
+            tagline: "Hope These Aren't Rotten",
             link_list: link_list,
         });
     });

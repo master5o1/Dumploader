@@ -2,8 +2,9 @@
  * GET /about
  */
 exports.about = function(req, res){
-    res.render('about', {
+    res.render('pages', {
         title: 'dumploader',
-        tagline: "What's with this thing?",
+        tagline: "What's With This Thing?",
+        page_body: "Thar be dragons.",
     })
 };

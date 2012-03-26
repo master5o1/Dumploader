@@ -1,7 +1,25 @@
-h3 List of files:
-each item in file_list
-  a(href="/info/#{item.file_id}/#{item.file_name}") info
-  span &nbsp;for&nbsp;
-  a(href="/view/#{item.file_id}/#{item.file_name}") #{item.file_name}
-  span &nbsp;Uploaded on: #{item.file_date}
-  br
+table.list
+    thead
+        tr
+            td.name Filename
+            td.size Size
+            td.info Info
+            td.date Date
+    tbody
+        each item, i in file_list
+            if i%2 == 1
+                tr.odd
+                    td.name
+                        a(href="/view/#{item.file_id}/#{item.file_name}") #{item.file_name}
+                    td.size= item.file_size
+                    td.info
+                        a(href="/info/#{item.file_id}/#{item.file_name}") info
+                    td.date= item.file_date
+            else
+                tr
+                    td.name
+                        a(href="/view/#{item.file_id}/#{item.file_name}") #{item.file_name}
+                    td.size= item.file_size
+                    td.info
+                        a(href="/info/#{item.file_id}/#{item.file_name}") info
+                    td.date= item.file_date

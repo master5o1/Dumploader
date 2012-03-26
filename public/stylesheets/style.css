@@ -1,19 +1,371 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    margin: 0 auto;
+    width: 900px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
 }
 
-img.uploaded_image { max-width: 500px; }
-
-div.copyright {
-    margin: 50px 0 10px 0;
+div.heading h1 {
+    text-transform: uppercase;
+    width: 900px;
+    margin: 20px 0 0 0;
+    padding: 0;
+    text-align: center;    
+    font-size: 8em;
+    height: 80px;
+    line-height: 70px;
 }
 
-span.error {
-    color: #ff9494;
+div.heading h1 a { text-decoration: none; color: #aaa; }
+div.heading h1 a:hover { color: #00b7ff; }
+
+div.main { clear: both; }
+
+div.site {
+    background: #eee;
+    border: solid 1px #00B7FF;
+    padding: 25px 100px;
+}
+
+div.tagline h2 {
+    float: left;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    width: 50%;
+    height: 25px;
+    line-height: 30px;
+    color: white;
+}
+
+div.tagline div.list {
+    float: right;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    text-align: right;
+    width: 50%;
+}
+div.list a {
+    display: inline-block;
+    padding: 0;
+    margin: 0 0 0 10px;
+    height: 25px;
+    line-height: 30px;
     font-weight: bold;
+    color: white;
+}
+div.list a:hover {
+    color: #e5e5e5;
+}
+div.heading div.tagline {
+    font-variant: small-caps;
+    margin: 0;
+    padding: 0 0.25em;
+    line-height: 30px;
+    height: 25px;
+    color: #666;
+    border: solid 1px #00B7FF;
+    border-bottom: none;
+    background-color: #00B7FF;
+    background-image: -webkit-gradient(linear, 0 0, 100% 100%,
+                                                    color-stop(.25, rgba(255, 255, 255, .2)), color-stop(.25, transparent),
+                                                    color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .2)),
+                                                    color-stop(.75, rgba(255, 255, 255, .2)), color-stop(.75, transparent),
+                                                    to(transparent));
+    background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-image: -ms-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-image: -o-linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-image: linear-gradient(-45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
+                                            transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
+                                            transparent 75%, transparent);
+    background-size: 25px 25px;
+}
+
+div.heading div.main-menu {
+    width: 900px;
+    height: 25px;
+    line-height: 30px;
+}
+
+div.main-menu a:hover {
+    color: #aaa;
+}
+div.main-menu a {
+    display: inline-block;
+    height: 25px;
+    text-align: center;
+    text-decoration: none;
+    color: #888;
+    font-weight: bold;
+    margin: 1px 2.0em 0 0.5em;
+    border: none;
+}
+
+div.linkform,
+div.pasteform,
+div.uploadform {
+    min-height: 75px;
+    padding: 25px 100px;
+    border: solid 1px #00B7FF;
+    background: #eeeeee;
+}
+
+div.linkform input[type="text"] {
+    width: 610px;
+    margin: 1px 0 0 0;
+    border: solid 1px #00B7FF;
+    line-height: 1.2em;
+    height: 2.0em;
+    background: #f5f5f5;
+}
+
+div.linkform input[type="submit"] {
+    width: 75px;
+    height: 30px;
+    margin: 1px 0 0 10px;
+}
+
+div.uploadform input[type="file"] {
+    border: solid 1px #00B7FF;
+    width: 607px;
+    padding: 4px 1px 3px 2px;
+    margin: 1px 5px 0 0;
+    background: #f5f5f5;
+}
+
+div.uploadform div.info {
+    display: none;
+    width: 668px;
+    min-height: 75px;
+    margin: 1.4em 0 0 0;
+    padding: 0px 14px;
+    border: solid 1px #00B7FF;
+    background: #eee;
+}
+
+div.uploadform input[type="submit"] {
+    margin: 0 0 0 0;
+    display: inline-block;
+    height: 30px;
+    width: 75px;
+    margin: 0 0 0 5px;
+}
+
+div.pasteform input[type="text"] {
+    font-family: "monospace";
+    width: 565px;
+    margin: 0 25px 0 5px;
+    border: solid 1px #00B7FF;
+    height: 1.2em;
+    font-size: 1.2em;
+    line-height: 1.4em;
+    background: #f5f5f5;
+}
+
+div.pasteform select {
+    width: 100px;
+    margin: 0;
+    padding: 0;
+    line-height: 1.4em;
+    font-size: 1.2em;
+}
+
+div.pasteform textarea {
+    font-family: "monospace";
+    margin: 0 5px;
+    width: 686px;
+    height: 250px;
+    border: solid 1px #00B7FF;
+    background: #f5f5f5;
+}
+
+div.pasteform input[type="submit"] {
+    margin: 1.0em 0 0 625px;
+    width: 75px;
+    height: 2.0em;
+}
+
+dl.file-info,
+dl.link-info {
+    border: solid 1px #00B7FF;
+    vertical-align: top;
+    line-height: 2.0em;
+    background: #e5e5e5;
+    margin: 0;
+}
+
+dl.file-info dt,
+dl.link-info dt {
+    font-variant: small-caps;
+    font-weight: bold;
+    text-align: right;
+    display: inline-block;
+    width: 115px;
+    padding: 0;
+    margin: 0 5px 0 25px;
+}
+
+dl.file-info dd,
+dl.link-info dd {
+    display: inline-block;
+    width: 723px;
+    margin: 0 25px 0 5px;
+}
+
+dl.file-info dt.img,
+dl.file-info dd.img {
+    display: block;
+    width: 848px;
+    padding: 0;
+    margin: 15px 5px 15px 25px;
+    text-align: center;
+    vertical-align: middle;
+}
+dl.file-info dt.img {
+    display: none;
+}
+
+dl.file-info img.uploaded_image { max-width: 848px; display: inline-block; }
+
+div.error,
+span.error {
+    margin: 1.0em 0 0;
+    font-weight: bold;
+}
+
+div.paste-title {
+    margin: 0;
+    padding: 0.125em 0.5em;
+    font-family: "monospace";
+    border: solid 1px #00B7FF;
+    border-bottom: none;
+    background: #e5e5e5;
+    font-variant: small-caps;
+}
+
+div.paste-title .paste-filename {
+    font-weight: bold;
+    font-variant: normal;
+}
+
+div.paste-title .paste-viewinfo {
+    float: right;
+    color: #00B7FF;
+}
+
+div.paste {
+    overflow: hidden;
+    border: solid 1px #00B7FF;
+    font-family: "monospace";
+    background-color: #eee;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, color-stop(.5, #eee), color-stop(.5, #e5e5e5), to(#e5e5e5));
+    background-image: -moz-linear-gradient(#eee 50%, #e5e5e5 50%, #e5e5e5);
+    background-image: -o-linear-gradient(#eee 50%, #e5e5e5 50%, #e5e5e5);
+    background-image: linear-gradient(#eee 50%, #e5e5e5 50%, #e5e5e5);
+    -webkit-background-size: 0px 2.9em !important; /* !important so that below doesn't reset it to -moz- one. */
+    background-size: 1px 3.2em; /* -moz- doesn't seem to do anything */
+    /* Can do Opera/IE later if I can be bothered. */
+}
+
+div.line-numbers {
+    float: left;
+    width: 3.5%;
+    color: #666;
+    background: #eee;
+    background: rgba(238,238,238,0.60);
+    padding: 0 0 1.2em;
+    border-right: solid 1px #00B7FF;
+}
+
+div.lines {
+    height: inherit;
+    float: left;
+    width: 96%;
+    color: #333;
+    overflow-x: auto;
+    padding: 0 0 1.2em;
+    /*border-left: solid 1px #00B7FF;*/
+}
+
+div.line-number,
+div.line-even,
+div.line-odd {
+    padding: 0.2em 0.3em;
+    white-space: pre;
+    line-height: 1.2em;
+}
+
+/*div.line-even { background: rgba(255,0,255,0.2); }*/
+
+table.list {
+    width: 900px;
+    border-spacing: 0;
+    border: solid 1px #00B7FF;
+    background: #eee;
+    padding: 0 0;
+}
+
+table.list thead tr:hover,
+table.list thead {
+    font-variant: small-caps;
+    line-height: 1.5em;
+    background: #dfdfdf;
+    font-weight: bold;
+    color: #444;
+}
+
+table.list td.name { padding: 0 0 0 5px; }
+table.list thead td.info, table.list td.size { text-align: right; }
+table.list thead td.info, table.list td.info { text-align: center; font-variant: small-caps; padding: 0 5px; }
+table.list thead td.date, table.list td.date { text-align: left; }
+
+table.list tr.odd {
+    background: #e5e5e5;
+}
+
+table.list tr:hover {
+    background: #f5f5f5;
+}
+
+table.list a {
+    display: inline-block;
+    width: 100%;
+}
+
+table.list a:hover {
+    background: transparent;
+    background: rgba(0, 183, 255, 0.05);
+}
+
+
+div.clearall { clear: both; }
+
+div.footer {
+    margin: 5px 0 10px 0;
+    color: #333;
+}
+
+div.footer a {
+    color: #333;
+}
+
+div.footer a:hover {
+    color: #666;
+}
+
+div.footer span.copyright {
+    float: right;
 }

@@ -1,12 +1,12 @@
-dl
-    dt Name:
+dl.file-info
+    dt Filename:
     dd= file.name
     dt Date uploaded:
     dd= file.date
     dt MD5 sum:
     dd= file.md5
-    dt Size in bytes:
-    dd= file.length
+    dt Size:
+    dd #{file.size} (#{file.length} bytes)
     dt Content type:
     dd= file.type
     dt Info URL:
@@ -19,7 +19,7 @@ dl
         dt Paste URL:
         dd
             a(href="/paste/#{file.id}/#{file.name}") #{host}/paste/#{file.id}/#{file.name}
-if image == "true"
-    dt Image:
-        dd
+    if image == "true"
+        dt.img Image:
+        dd.img
             img.uploaded_image(src="/view/#{file.id}/#{file.name}")

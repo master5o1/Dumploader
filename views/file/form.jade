@@ -1,3 +1,8 @@
-form(action="/upload", method="post", enctype="multipart/form-data")
-  input(type="file", name="uploaded_file")
-  input(type="submit", name="submit_file")
+div.uploadform
+    form(action="/upload", method="post", enctype="multipart/form-data")
+        span Upload File:
+        br
+        input(type="file", name="uploaded_file")
+        input(type="submit", name="submit_file")
+    div.info
+        p Accepts any file. Some more info, etc.
