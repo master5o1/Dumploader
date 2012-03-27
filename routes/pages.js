@@ -1,9 +1,10 @@
+var site = require('../site_strings').site;
 /*
  * GET /about
  */
 exports.about = function(req, res){
     res.render('pages', {
-        title: 'dumploader',
+        site: site,
         tagline: "What's With This Thing?",
     })
 };

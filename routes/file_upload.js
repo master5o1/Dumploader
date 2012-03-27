@@ -1,29 +1,41 @@
 var fs = require('fs');
 var storage = require('../storage');
-
+var site = require('../site_strings').site;
+var url = require('url');
 /*
  * GET /upload
  */
 exports.form = function(req, res){
-    if (false) { // off by defualt because it loads full size images coz I haven't got thumbnails sorted.
-        file_list = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1}).sort({uploadDate: -1}).limit(5);
+    var req_url = url.parse(req.url, true);
+    var show_error = 'false';
+    var error = '';
+    if (typeof req_url.query.error != undefined) {
+        show_error = 'true';
+        error = req_url.query.error;
+    }
+    if (true) { // off by defualt because it loads full size images coz I haven't got thumbnails sorted.
+        file_list = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1 }).sort({uploadDate: -1}).limit(6);
         file_list.toArray(function(err, value){
             var images = [];
             value.forEach(function(element){
                 this.push({id: element._id.toString(36), name: element.filename});
             }, images);
             res.render('file/form', {
-                title: 'dumploader',
+                site: site,
                 tagline: 'Dump It Here',
-                featured_images: images,
+                featured_images: { top: images, last: images },
+                show_error: show_error,
+                error: error,
             })
         });
     } else {
         var images = [];
         res.render('file/form', {
-            title: 'dumploader',
+            site: site,
             tagline: 'Dump It Here',
-            featured_images: images,
+            featured_images: { top: images, last: images },
+            show_error: show_error,
+            error: error,
         })
     }
 };
@@ -34,20 +46,10 @@ exports.form = function(req, res){
 exports.upload = function(req, res) {
     fs.readFile(req.files.uploaded_file.path, function (err, data) {
         if (err || (req.files.uploaded_file.name == '' && req.files.uploaded_file.size == 0)) {
-            res.render('file/form', {
-                title: 'dumploader',
-                tagline: 'OH Noes! Try Again'
-            });
+            res.redirect('/upload/?error=Dunno what happened there.');
         } else {
-            storage.add_file(req.files.uploaded_file, function(file){ 
-                res.render('file/handler', {
-                    title: 'dumploader',
-                    tagline: 'File Uploaded!',
-                    image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
-                    file_id: file._id.toString(36),
-                    file_name: file.filename,
-                    host: req.headers.host,
-                });
+            storage.add_file(req.files.uploaded_file, function(file){
+                res.redirect('/info/' + file._id.toString(36) + '/' + file.filename);
             });
         }
     });
@@ -70,7 +72,7 @@ exports.info = function(req, res){
                 return parseInt(size*100)/100 + ' ' + units.shift() + 'iB';
             })(file.length);
             res.render('file/info', {
-                title: 'dumploader',
+                site: site,
                 tagline: 'Information on File',
                 image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
                 paste: ((file.contentType.match(/^text.*$|.*javascript$|.*php$/)) ? 'true' : 'false'),
@@ -98,6 +100,25 @@ exports.view = function(req, res){
         var stream = file.readStream()
         res.setHeader("Content-Type", file.contentType);
         stream.pipe(res)
+    });
+};
+
+/*
+ * GET /thumb/:id/:filename?
+ */
+exports.thumb = function(req, res){
+    var file_id = parseInt(req.params.id, 36);
+    storage.get_file(file_id, function(file) {
+        if (file.contentType.match(/^image\/.*/)) {
+            storage.get_thumb(file_id, function(thumb) {
+                var stream = thumb.readStream()
+                res.setHeader("Content-Type", thumb.contentType);
+                stream.pipe(res)
+            });
+        } else {
+            var name = ((typeof req.params.name != undefined && req.params.name != '') ? '/' + req.params.name : '');
+            res.redirect('/view/' + req.params.id + name);
+        }
     });
 };
 
@@ -133,7 +154,7 @@ exports.list = function(req, res){
             this.push({file_id: element._id.toString(36), file_name: element.filename, file_date: element.uploadDate, file_size: file_size});
         }, file_list);
         res.render('file/list', {
-            title: 'dumploader',
+            site: site,
             tagline: 'Do You Recognise Any of These?',
             file_list: file_list,
             host: req.headers.host,

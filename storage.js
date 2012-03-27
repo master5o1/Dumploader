@@ -3,17 +3,53 @@ var Mongolian = require("mongolian");
 var server = new Mongolian;
 var db = server.db("dumploader");
 var gridfs = db.gridfs();
+var thumbs = db.gridfs('thumbs');
 
+var im = require('imagemagick');
+
+/*
+TO DO:
+Add file view counts.
+This includes thumbnail counts.
+Add a referer + incriment count: file.referers[referer]+=1;
+View total view count: var view_count = 0; file.referers.forEach(function(element){ this += element }, view_count);
+Etc.
+db.collection('fs.view').insert({
+    'referers': { },
+    'thumb_referers': { },
+});
+
+Change the links views to the same way as this.
+*/
+
+exports.thumbs = thumbs;
 exports.gridfs = gridfs;
 exports.db = db;
 
 exports.add_file = function(uploaded_file, callback) {
     db.collection('fs.files').count(function(err, value){
+        var file_id = (new Date()).getTime();
         var file = gridfs.create({
-            _id: (new Date()).getTime(), // May not be Atomic but it works, I guess.
+            _id: file_id, // May not be Atomic but it works, I guess.
             filename: uploaded_file.name,
             contentType: uploaded_file.type,
         })
+        if (uploaded_file.type.match(/^image\/.*/)) {
+            var thumb = thumbs.create({
+                _id: file_id,
+                filename: uploaded_file.name,
+                contentType: uploaded_file.type,
+            });
+            im.resize({
+                srcPath: uploaded_file.path,
+                dstPath: uploaded_file.path + '-thumb',
+                width:   150
+            }, function(err, stdout, stderr){
+                if (err) throw err
+                var thumb_stream = thumb.writeStream();
+                fs.createReadStream(uploaded_file.path + '-thumb').pipe(thumb_stream);
+            });
+        }
         var stream = file.writeStream()
         fs.createReadStream(uploaded_file.path).pipe(stream)
         callback(file);
@@ -28,6 +64,13 @@ exports.get_file = function(file_id, callback) {
     })
 }
 
+exports.get_thumb = function(file_id, callback) {
+    thumbs.findOne({_id: file_id}, function (err, file) {
+        if (!err && file) {
+                callback(file);
+        }
+    })
+}
 
 exports.add_paste = function(paste, callback) {
     db.collection('fs.files').count(function(err, value){

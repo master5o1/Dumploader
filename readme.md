@@ -16,4 +16,5 @@ Requirements
 * Express (I've got v2.5.8)
 * MongoDB (Shell version is 2.0.2)
 * Mongolian DeadBeef (I've got 0.1.17)
+* ImageMagick (0.1.2)
 * Jade

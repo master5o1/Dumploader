@@ -1,5 +1,6 @@
 var storage = require('../storage');
 var url = require('url');
+var site = require('../site_strings').site;
 
 /*
  * GET /link
@@ -13,7 +14,7 @@ exports.form = function(req, res){
         error = req_url.query.error;
     }
     res.render('url/form', {
-        title: 'dumploader',
+        site: site,
         tagline: "Sometimes It's Just a Little Too Big",
         show_error: show_error,
         error: error,
@@ -46,7 +47,7 @@ exports.info = function(req, res){
         link.link_id = link.link_id.toString(36);
         link.hits = link.hits || 0;
         res.render('url/info', {
-            title: 'dumploader',
+            site: site,
             tagline: "Short Link Information",
             link: link,
             host: req.headers.host,
@@ -87,7 +88,7 @@ exports.list = function(req, res){
             this.push({link_id: element.link_id.toString(36), link_url: element.link_url, created: element.created, hits: element.hits || 0});
         }, link_list);
         res.render('url/list', {
-            title: 'dumploader',
+            site: site,
             tagline: "Hope These Aren't Rotten",
             link_list: link_list,
         });

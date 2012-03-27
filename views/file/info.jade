@@ -20,6 +20,9 @@ dl.file-info
         dd
             a(href="/paste/#{file.id}/#{file.name}") #{host}/paste/#{file.id}/#{file.name}
     if image == "true"
+        dt Thumbnail URL: 
+        dd
+            a(href="/thumb/#{file.id}/#{file.name}") #{host}/thumb/#{file.id}/#{file.name}
         dt.img Image:
         dd.img
             img.uploaded_image(src="/view/#{file.id}/#{file.name}")

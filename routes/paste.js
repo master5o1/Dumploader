@@ -1,7 +1,7 @@
 var fs = require('fs');
 var storage = require('../storage');
 var url = require('url');
-
+var site = require('../site_strings').site;
 /*
  * GET /paste
  */
@@ -14,7 +14,7 @@ exports.form = function(req, res){
         error = req_url.query.error;
     }
     res.render('pastebin/form', {
-        title: 'dumploader',
+        site: site,
         tagline: 'Paste It Here',
         show_error: show_error,
         error: error,
@@ -56,7 +56,7 @@ exports.view = function(req, res) {
                 }, lines_data);
                 lines = lines_data;
                 res.render('pastebin/view', {
-                    title: 'dumploader',
+                    site: site,
                     tagline: 'Lines Numbered For Your Viewing Pleasure',
                     file_id: req.params.id,
                     file_name: file.filename,

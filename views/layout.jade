@@ -1,12 +1,14 @@
 !!!
 html
     head
-        title= title
+        title= site.title
         link(rel='stylesheet', href='/stylesheets/style.css')
     body
         div.heading
-            h1.title
-                a(href="/") #{title}
+            div.branding
+                h1.title
+                    a(href="/") #{site.title}
+                div &mdash; #{site.tagline()}
             div.main-menu
                 div.menu
                     a.first(href="/upload") Upload File

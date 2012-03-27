@@ -8,15 +8,31 @@ a {
   color: #00B7FF;
 }
 
-div.heading h1 {
-    text-transform: uppercase;
+div.branding {
     width: 900px;
-    margin: 20px 0 0 0;
+    height: 50px;
+}
+
+div.branding h1 {
+    font-variant: small-caps;
+    display: inline-block;
+    padding: 0 20px 0 10px;
+    margin: 0;
+    text-align: left;
+    font-size:3.5em;
+    width: 255px;
+    height: 50px;
+    line-height: 50px;
+}
+
+div.branding div {
+    width: 615px;
     padding: 0;
-    text-align: center;    
-    font-size: 8em;
-    height: 80px;
-    line-height: 70px;
+    margin: 0;
+    float: right;
+    display: inline-block;
+    height: 50px;
+    line-height: 60px;
 }
 
 div.heading h1 a { text-decoration: none; color: #aaa; }
@@ -162,6 +178,15 @@ div.featured-images {
     border: solid 1px #00b7ff;
     border-top: none;
     text-align: center;
+    width: 438px;
+    display: inline-block;
+}
+
+div.featured-images.left {
+    margin: 20px 10px 0 0;
+}
+div.featured-images.right {
+    margin: 20px 0 0 10px;
 }
 
 div.featured-images img {
@@ -172,6 +197,11 @@ div.featured-images img {
     width: 150px;
     overflow: hidden;
     background: #f0f;
+}
+
+div.featured-images img:hover {
+    border: solid 2px #00b7ff;
+    margin: 8px;
 }
 
 div.linkform input[type="text"] {
