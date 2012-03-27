@@ -1,0 +1,6 @@
+div.site
+    ul
+        each page in pages
+            li
+                a(href="/page/#{page.url}") #{page.title}
+                &mdash; /page/#{page.url}

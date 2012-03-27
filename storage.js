@@ -7,21 +7,6 @@ var thumbs = db.gridfs('thumbs');
 
 var im = require('imagemagick');
 
-/*
-TO DO:
-Add file view counts.
-This includes thumbnail counts.
-Add a referer + incriment count: file.referers[referer]+=1;
-View total view count: var view_count = 0; file.referers.forEach(function(element){ this += element }, view_count);
-Etc.
-db.collection('fs.view').insert({
-    'referers': { },
-    'thumb_referers': { },
-});
-
-Change the links views to the same way as this.
-*/
-
 exports.thumbs = thumbs;
 exports.gridfs = gridfs;
 exports.db = db;

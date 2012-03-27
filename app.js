@@ -56,7 +56,8 @@ app.post('/paste', routes.paste.handler);
 app.get('/paste/:id/:name?', routes.paste.view);
 
 // Other pages
-app.get('/about', routes.pages.about);
+app.get('/page', routes.pages.index);
+app.get('/page/:name', routes.pages.run);
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
