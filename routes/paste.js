@@ -2,6 +2,7 @@ var fs = require('fs');
 var storage = require('../storage');
 var url = require('url');
 var site = require('../site_strings').site;
+
 /*
  * GET /paste
  */
@@ -37,7 +38,6 @@ exports.handler = function(req, res) {
         });
     }
 };
-
 
 /*
  * GET /paste/:id/:name?

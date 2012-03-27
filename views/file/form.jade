@@ -3,20 +3,22 @@ div.uploadform
         span Upload File:
         br
         input(type="file", name="uploaded_file")
-        input(type="submit", name="submit_file")
+        input(type="submit", name="submit_file", value="Upload")
         if show_error
             div.error= error
     div.info
         p Accepts any file. Some more info, etc.
-if featured_images.last.length > 0
+if featured_images.last.length > 0 && featured_images.most.length > 0
     div.featured-images.left
-        h2 Last Six Images
-        each image in featured_images.last
-            a(href="/info/#{image.id}/#{image.name}")
-                img(src="/thumb/#{image.id}/#{image.name}")
-if featured_images.top.length > 0
+        h2 Six Most Recent Images
+        div
+            each image in featured_images.last
+                a(href="/info/#{image.id}")
+                    img(src="/thumb/#{image.id}")
     div.featured-images.right
-        h2 Top Six Images
-        each image in featured_images.top
-            a(href="/info/#{image.id}/#{image.name}")
-                img(src="/thumb/#{image.id}/#{image.name}")
+        h2 Most Viewed Images
+        div
+            each image in featured_images.most
+                a(href="/info/#{image.id}")
+                    img(src="/thumb/#{image.id}")
+div.clearall

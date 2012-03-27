@@ -35,6 +35,11 @@ exports.add_file = function(uploaded_file, callback) {
                 fs.createReadStream(uploaded_file.path + '-thumb').pipe(thumb_stream);
             });
         }
+        var meta = db.collection('fs.meta').insert({
+            file_id: file_id,
+            views: 0,
+            contentType: file.contentType,
+        });
         var stream = file.writeStream()
         fs.createReadStream(uploaded_file.path).pipe(stream)
         callback(file);
@@ -43,9 +48,11 @@ exports.add_file = function(uploaded_file, callback) {
 
 exports.get_file = function(file_id, callback) {
     gridfs.findOne({_id: file_id}, function (err, file) {
-        if (!err && file) {
+        var meta = db.collection('fs.meta');
+        meta.findOne({file_id: file._id}, function(err, file_meta) {
+            file.meta = file_meta;
             callback(file);
-        }
+        });
     })
 }
 

@@ -15,7 +15,7 @@ exports.form = function(req, res){
     }
     res.render('url/form', {
         site: site,
-        tagline: "Sometimes It's Just a Little Too Big",
+        tagline: "URL Shortening",
         show_error: show_error,
         error: error,
     })
@@ -48,7 +48,7 @@ exports.info = function(req, res){
         link.hits = link.hits || 0;
         res.render('url/info', {
             site: site,
-            tagline: "Short Link Information",
+            tagline: "Short URL Information",
             link: link,
             host: req.headers.host,
         })
@@ -89,7 +89,7 @@ exports.list = function(req, res){
         }, link_list);
         res.render('url/list', {
             site: site,
-            tagline: "Hope These Aren't Rotten",
+            tagline: "List of Shortened URLs",
             link_list: link_list,
         });
     });

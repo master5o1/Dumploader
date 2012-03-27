@@ -12,9 +12,9 @@ License text: http://www.gnu.org/licenses/agpl-3.0.html
 
 Requirements
 ------------
-* Node.js (I'm using v0.6.13)
-* Express (I've got v2.5.8)
+* Node.js (0.6.13)
 * MongoDB (Shell version is 2.0.2)
-* Mongolian DeadBeef (I've got 0.1.17)
+* Express (2.5.8)
+* Mongolian DeadBeef (0.1.17)
 * ImageMagick (0.1.2)
-* Jade
+* Jade (0.22.0)

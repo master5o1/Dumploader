@@ -1,4 +1,8 @@
 dl.file-info
+    if image == "true"
+        dt.img Image:
+        dd.img
+            img.uploaded_image(src="/thumb/#{file.id}/#{file.name}")
     dt Filename:
     dd= file.name
     dt Date uploaded:
@@ -9,6 +13,8 @@ dl.file-info
     dd #{file.size} (#{file.length} bytes)
     dt Content type:
     dd= file.type
+    dt Views
+    dd= file.views
     dt Info URL:
     dd
         a(href="/info/#{file.id}/#{file.name}") #{host}/info/#{file.id}/#{file.name}
@@ -23,6 +29,3 @@ dl.file-info
         dt Thumbnail URL: 
         dd
             a(href="/thumb/#{file.id}/#{file.name}") #{host}/thumb/#{file.id}/#{file.name}
-        dt.img Image:
-        dd.img
-            img.uploaded_image(src="/view/#{file.id}/#{file.name}")

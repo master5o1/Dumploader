@@ -20,16 +20,15 @@ div.branding h1 {
     margin: 0;
     text-align: left;
     font-size:3.5em;
-    width: 255px;
     height: 50px;
     line-height: 50px;
+    float: left;
 }
 
 div.branding div {
-    width: 615px;
     padding: 0;
     margin: 0;
-    float: right;
+    float: left;
     display: inline-block;
     height: 50px;
     line-height: 60px;
@@ -51,7 +50,7 @@ div.tagline h2 {
     margin: 0;
     padding: 0;
     display: inline-block;
-    width: 50%;
+    width: 75%;
     height: 25px;
     line-height: 30px;
     color: white;
@@ -63,7 +62,7 @@ div.tagline div.list {
     padding: 0;
     display: inline-block;
     text-align: right;
-    width: 50%;
+    width: 25%;
 }
 div.list a {
     display: inline-block;
@@ -182,11 +181,17 @@ div.featured-images {
     display: inline-block;
 }
 
+div.featured-images div {
+    padding: 0 15px;
+}
+
 div.featured-images.left {
     margin: 20px 10px 0 0;
+    float: left;
 }
 div.featured-images.right {
     margin: 20px 0 0 10px;
+    float: right;
 }
 
 div.featured-images img {
@@ -194,7 +199,6 @@ div.featured-images img {
     vertical-align: middle;
     display: inline-block;
     max-height: 100px;
-    width: 150px;
     overflow: hidden;
     background: #f0f;
 }

@@ -14,25 +14,33 @@ exports.form = function(req, res){
         error = req_url.query.error;
     }
     if (true) { // off by defualt because it loads full size images coz I haven't got thumbnails sorted.
-        file_list = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1 }).sort({uploadDate: -1}).limit(6);
-        file_list.toArray(function(err, value){
-            var images = [];
-            value.forEach(function(element){
-                this.push({id: element._id.toString(36), name: element.filename});
-            }, images);
-            res.render('file/form', {
-                site: site,
-                tagline: 'Dump It Here',
-                featured_images: { top: images, last: images },
-                show_error: show_error,
-                error: error,
-            })
+        recent_images = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1 }).sort({uploadDate: -1}).limit(6);
+        recent_images.toArray(function(err, recent){
+            var r_images = [];
+            recent.forEach(function(element){
+                this.push({id: element._id.toString(36)});
+            }, r_images);
+            var meta = storage.db.collection('fs.meta');
+            most_viewed = meta.find({contentType: /^image\/[^gif].*/}, {file_id: 1}).sort({views: -1}).limit(6);
+            most_viewed.toArray(function(err,most) {
+                var m_images = [];
+                most.forEach(function(element){
+                    this.push({id: element.file_id.toString(36)});
+                }, m_images);
+                res.render('file/form', {
+                    site: site,
+                    tagline: 'Upload A File',
+                    featured_images: { most: m_images, last: r_images },
+                    show_error: show_error,
+                    error: error,
+                })
+            });
         });
     } else {
         var images = [];
         res.render('file/form', {
             site: site,
-            tagline: 'Dump It Here',
+            tagline: 'Upload A File',
             featured_images: { top: images, last: images },
             show_error: show_error,
             error: error,
@@ -60,34 +68,33 @@ exports.upload = function(req, res) {
  */
 exports.info = function(req, res){
     var fileId = parseInt(req.params.id, 36);
-    storage.gridfs.findOne({_id: fileId}, function (err, file) {
-        if (!err && file) {
-            file_size = (function(size) {
-                if (size < 1024) return size + ' B';
-                units = ['B', 'K', 'M', 'G', 'T', 'P'];
-                while (size >= 1024) {
-                    size = size / 1024;
-                    units.shift();
-                }
-                return parseInt(size*100)/100 + ' ' + units.shift() + 'iB';
-            })(file.length);
-            res.render('file/info', {
-                site: site,
-                tagline: 'Information on File',
-                image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
-                paste: ((file.contentType.match(/^text.*$|.*javascript$|.*php$/)) ? 'true' : 'false'),
-                file: {
-                    name: file.filename,
-                    id: file._id.toString(36),
-                    date: file.uploadDate,
-                    md5: file.md5,
-                    size: file_size,
-                    length: file.length,
-                    type: file.contentType,
-                },
-                host: req.headers.host,
-            });
-        }
+    storage.get_file(fileId, function(file) {
+        file_size = (function(size) {
+            if (size < 1024) return size + ' B';
+            units = ['B', 'K', 'M', 'G', 'T', 'P'];
+            while (size >= 1024) {
+                size = size / 1024;
+                units.shift();
+            }
+            return parseInt(size*100)/100 + ' ' + units.shift() + 'iB';
+        })(file.length);
+        res.render('file/info', {
+            site: site,
+            tagline: 'File Information',
+            image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
+            paste: ((file.contentType.match(/^text.*$|.*javascript$|.*php$/)) ? 'true' : 'false'),
+            file: {
+                name: file.filename,
+                id: file._id.toString(36),
+                date: file.uploadDate,
+                md5: file.md5,
+                size: file_size,
+                length: file.length,
+                type: file.contentType,
+                views: file.meta.views,
+            },
+            host: req.headers.host,
+        });
     })
 };
 
@@ -97,6 +104,7 @@ exports.info = function(req, res){
 exports.view = function(req, res){
     var file_id = parseInt(req.params.id, 36);
     storage.get_file(file_id, function(file) {
+        storage.db.collection('fs.meta').findAndModify({query: {file_id:file_id}, update: {"$inc":{"views":1}}, 'new': true}, function(err, file_meta) { return; });
         var stream = file.readStream()
         res.setHeader("Content-Type", file.contentType);
         stream.pipe(res)
@@ -123,7 +131,7 @@ exports.thumb = function(req, res){
 };
 
 /*
- * GET /show_all
+ * GET /list/files/
  */
 exports.list = function(req, res){
     var limit = req.params.limit;
