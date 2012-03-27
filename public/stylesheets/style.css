@@ -6,6 +6,11 @@ body {
 
 a {
   color: #00B7FF;
+  text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 div.branding {
@@ -437,6 +442,9 @@ table.list a:hover {
     background: rgba(0, 183, 255, 0.05);
 }
 
+table.list tfoot a:hover {
+    background: none;
+}
 
 div.clearall { clear: both; }
 
