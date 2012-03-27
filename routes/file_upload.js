@@ -14,14 +14,14 @@ exports.form = function(req, res){
         error = req_url.query.error;
     }
     if (true) { // off by defualt because it loads full size images coz I haven't got thumbnails sorted.
-        recent_images = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1 }).sort({uploadDate: -1}).limit(6);
+        recent_images = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1 }).sort({uploadDate: -1}).limit(9);
         recent_images.toArray(function(err, recent){
             var r_images = [];
             recent.forEach(function(element){
                 this.push({id: element._id.toString(36)});
             }, r_images);
             var meta = storage.db.collection('fs.meta');
-            most_viewed = meta.find({contentType: /^image\/[^gif].*/}, {file_id: 1}).sort({views: -1}).limit(6);
+            most_viewed = meta.find({contentType: /^image\/[^gif].*/}, {file_id: 1}).sort({views: -1}).limit(9);
             most_viewed.toArray(function(err,most) {
                 var m_images = [];
                 most.forEach(function(element){
@@ -83,6 +83,7 @@ exports.info = function(req, res){
             tagline: 'File Information',
             image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
             paste: ((file.contentType.match(/^text.*$|.*javascript$|.*php$/)) ? 'true' : 'false'),
+            bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
             file: {
                 name: file.filename,
                 id: file._id.toString(36),
@@ -134,10 +135,12 @@ exports.thumb = function(req, res){
  * GET /list/files/
  */
 exports.list = function(req, res){
-    var limit = req.params.limit;
-    
-    file_list = storage.gridfs.find({}, {_id: 1, filename: 1, uploadDate: 1, length: 1}).sort({uploadDate: -1}).limit(limit);
+    var skip = req.params.skip;
+    var limit = 50;
+    if (typeof skip == undefined || skip == undefined || skip == 'undefined' || skip <= 0) skip = 0;
+    file_list = storage.gridfs.find({}, {_id: 1, filename: 1, uploadDate: 1, length: 1}).sort({uploadDate: -1}).skip(skip).limit(limit);
     file_list.toArray(function(err, value){
+        var current_count = value.length;
         var file_list = [];
         value.forEach(function(element){
             var file_size = (function(size) {
@@ -163,9 +166,12 @@ exports.list = function(req, res){
         }, file_list);
         res.render('file/list', {
             site: site,
-            tagline: 'Do You Recognise Any of These?',
+            tagline: 'List of Uploaded Files',
             file_list: file_list,
             host: req.headers.host,
+            show_next: ((current_count == limit)? true : false),
+            next_skip: (limit + parseInt(skip)),
+            limit: limit,
         });
     });
 };

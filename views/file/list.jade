@@ -23,3 +23,17 @@ table.list
                     td.info
                         a(href="/info/#{item.file_id}/#{item.file_name}") info
                     td.date= item.file_date
+    tfoot
+        tr.skip
+            td(style="text-align: left;")
+                if next_skip-limit-limit < 0
+                    | Previous Page
+                else
+                    a(href="/list/files/#{next_skip-limit-limit}") Previous Page
+            td &nbsp;
+            td &nbsp;
+            td(style="text-align: right;")
+                if show_next
+                    a(href="/list/files/#{next_skip}") Next Page
+                else
+                    | Next Page

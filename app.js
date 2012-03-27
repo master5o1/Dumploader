@@ -40,7 +40,7 @@ app.post('/upload', routes.file.upload);
 app.get('/view/:id/:name?', routes.file.view);
 app.get('/thumb/:id/:name?', routes.file.thumb);
 app.get('/info/:id/:name?', routes.file.info);
-app.get('/list/files/:limit?', routes.file.list);
+app.get('/list/files/:skip?', routes.file.list);
 app.get('/list', function(req, res){ res.redirect('/list/files'); });
 
 // Links
@@ -48,7 +48,7 @@ app.get('/link', routes.link.form);
 app.post('/link', routes.link.handler);
 app.get('/link/:id', routes.link.redirect);
 app.get('/link/:id/info', routes.link.info);
-app.get('/list/links/:limit?', routes.link.list);
+app.get('/list/links/:skip?', routes.link.list);
 
 // Paste
 app.get('/paste', routes.paste.form);

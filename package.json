@@ -3,9 +3,9 @@
   , "version": "0.0.1"
   , "private": true
   , "dependencies": {
-      "express": "2.5.8"
+      "express": "~2.5.8"
     , "jade": ">= 0.0.1"
-    , "mongolian": ">= 0.1.17"
-    , "imagemagick": "0.1.2"
+    , "mongolian": "~0.1.17"
+    , "imagemagick": "~0.1.2"
   }
 }

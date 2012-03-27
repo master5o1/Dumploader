@@ -76,6 +76,11 @@ exports.add_paste = function(paste, callback) {
             if (err) throw err;
             fs.createReadStream("/tmp/paste-" + file._id.toString(36)).pipe(stream);
             fs.unlink("/tmp/paste-" + file._id.toString(36));
+            var meta = db.collection('fs.meta').insert({
+                file_id: file._id,
+                views: 0,
+                contentType: file.contentType,
+            });
             callback(file);
         })
     });

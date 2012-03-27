@@ -179,6 +179,7 @@ div.featured-images {
     text-align: center;
     width: 438px;
     display: inline-block;
+    height: 370px;
 }
 
 div.featured-images div {
@@ -198,7 +199,8 @@ div.featured-images img {
     margin: 10px;
     vertical-align: middle;
     display: inline-block;
-    max-height: 100px;
+    width: 90px;
+    max-height: 120px;
     overflow: hidden;
     background: #f0f;
 }
@@ -393,8 +395,6 @@ div.line-odd {
     line-height: 1.2em;
 }
 
-/*div.line-even { background: rgba(255,0,255,0.2); }*/
-
 table.list {
     width: 900px;
     border-spacing: 0;
@@ -404,7 +404,9 @@ table.list {
 }
 
 table.list thead tr:hover,
-table.list thead {
+table.list thead,
+table.list tfoot,
+table.list tfoot tr:hover {
     font-variant: small-caps;
     line-height: 1.5em;
     background: #dfdfdf;
@@ -412,10 +414,10 @@ table.list thead {
     color: #444;
 }
 
-table.list td.name { padding: 0 0 0 5px; }
+table.list td.name { width: 60%; padding: 0 0 0 5px; }
 table.list thead td.info, table.list td.size { text-align: right; }
-table.list thead td.info, table.list td.info { text-align: center; font-variant: small-caps; padding: 0 5px; }
-table.list thead td.date, table.list td.date { text-align: left; }
+table.list thead td.info, table.list td.info { text-align: center; font-variant: small-caps; padding: 0 5px; width: 5%; }
+table.list thead td.date, table.list td.date { text-align: left; width: 16.5%; }
 
 table.list tr.odd {
     background: #e5e5e5;

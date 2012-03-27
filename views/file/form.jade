@@ -10,7 +10,7 @@ div.uploadform
         p Accepts any file. Some more info, etc.
 if featured_images.last.length > 0 && featured_images.most.length > 0
     div.featured-images.left
-        h2 Six Most Recent Images
+        h2 Most Recent Images
         div
             each image in featured_images.last
                 a(href="/info/#{image.id}")

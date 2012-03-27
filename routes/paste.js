@@ -55,6 +55,7 @@ exports.view = function(req, res) {
                     this[index] = element.replace('\r','\r\n');
                 }, lines_data);
                 lines = lines_data;
+                storage.db.collection('fs.meta').findAndModify({query: {file_id:file_id}, update: {"$inc":{"views":1}}, 'new': true}, function(err, file_meta) { return; });
                 res.render('pastebin/view', {
                     site: site,
                     tagline: 'Lines Numbered For Your Viewing Pleasure',

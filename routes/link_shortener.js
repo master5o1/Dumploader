@@ -69,10 +69,12 @@ exports.redirect = function(req, res){
  * GET /list/links/:limit?
  */
 exports.list = function(req, res){
-    var limit = req.params.limit;
-    
-    link_list = storage.db.collection('links').find({}, {link_id: 1, link_url: 1, created: 1, hits: 1}).sort({_id: -1}).limit(limit);
+    var skip = req.params.skip;
+    var limit = 50;
+    if (typeof skip == undefined || skip == undefined || skip == 'undefined' || skip <= 0) skip = 0;
+    link_list = storage.db.collection('links').find({}, {link_id: 1, link_url: 1, created: 1, hits: 1}).sort({_id: -1}).skip(skip).limit(limit);
     link_list.toArray(function(err, value){
+        var current_count = value.length;
         var link_list = [];
         value.forEach(function(element){
             element.created = (function(uploadDate){
@@ -91,6 +93,9 @@ exports.list = function(req, res){
             site: site,
             tagline: "List of Shortened URLs",
             link_list: link_list,
+            show_next: ((current_count == limit)? true : false),
+            next_skip: (limit + parseInt(skip)),
+            limit: limit,
         });
     });
 };
