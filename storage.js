@@ -21,7 +21,7 @@ exports.add_file = function(uploaded_file, callback) {
         })
         if (uploaded_file.type.match(/^image\/.*/)) {
             var thumb = thumbs.create({
-                _id: file_id,
+                _id: file._id,
                 filename: uploaded_file.name,
                 contentType: uploaded_file.type,
             });
@@ -36,7 +36,7 @@ exports.add_file = function(uploaded_file, callback) {
             });
         }
         var meta = db.collection('fs.meta').insert({
-            file_id: file_id,
+            file_id: file._id,
             views: 0,
             contentType: file.contentType,
         });
@@ -48,11 +48,13 @@ exports.add_file = function(uploaded_file, callback) {
 
 exports.get_file = function(file_id, callback) {
     gridfs.findOne({_id: file_id}, function (err, file) {
-        var meta = db.collection('fs.meta');
-        meta.findOne({file_id: file._id}, function(err, file_meta) {
-            file.meta = file_meta;
-            callback(file);
-        });
+        if (!err && file) {
+            var meta = db.collection('fs.meta');
+            meta.findOne({file_id: file._id}, function(err, file_meta) {
+                file.meta = file_meta;
+                callback(file);
+            });
+        }
     })
 }
 

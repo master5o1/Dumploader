@@ -120,6 +120,9 @@ div.heading div.main-menu {
     line-height: 30px;
 }
 
+div.heading div.main-menu div.menu {
+}
+
 div.main-menu a:hover {
     color: #aaa;
 }
@@ -137,7 +140,7 @@ div.main-menu a {
 div.linkform,
 div.pasteform,
 div.uploadform {
-    min-height: 75px;
+    min-height: 50px;
     padding: 25px 100px;
     border: solid 1px #00B7FF;
     background: #eeeeee;

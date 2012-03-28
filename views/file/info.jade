@@ -2,7 +2,8 @@ dl.file-info
     if image == "true"
         dt.img Image:
         dd.img
-            img.uploaded_image(src="/thumb/#{file.id}/#{file.name}")
+            a(href="/view/#{file.id}/#{file.name}")
+                img.uploaded_image(src="/thumb/#{file.id}/#{file.name}")
     dt Filename:
     dd= file.name
     dt Date uploaded:
