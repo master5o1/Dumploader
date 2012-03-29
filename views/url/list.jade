@@ -2,8 +2,8 @@ table.list
     thead
         tr
             td.name Target
-            td.info Info
             td.info Hits
+            td.info Info
             td.date Date
     tbody
         each item, i in link_list
@@ -11,17 +11,17 @@ table.list
                 tr.odd
                     td.name
                         a(href="/link/#{item.link_id}") #{item.link_url}
+                    td.info= item.hits
                     td.info
                         a(href="/link/#{item.link_id}/info") info
-                    td.info= item.hits
                     td.date= item.created
             else
                 tr
                     td.name
                         a(href="/link/#{item.link_id}") #{item.link_url}
+                    td.info= item.hits
                     td.info
                         a(href="/link/#{item.link_id}/info") info
-                    td.info= item.hits
                     td.date= item.created         
     tfoot
         tr.skip

@@ -13,8 +13,3 @@ exports.site = {
         return s[Math.floor(Math.random()*s.length)];
     }
 }
-/*
- ((function(){
-        return tagline[Math.floor(Math.random()*taglines.length)];
-    })())
-*/

@@ -39,6 +39,10 @@ div.branding div {
     line-height: 60px;
 }
 
+div.branding div:hover {
+    color: #666;
+}
+
 div.heading h1 a { text-decoration: none; color: #aaa; }
 div.heading h1 a:hover { color: #00b7ff; }
 
@@ -210,7 +214,6 @@ div.featured-images img {
     width: 90px;
     max-height: 120px;
     overflow: hidden;
-    background: #f0f;
 }
 
 div.featured-images img:hover {

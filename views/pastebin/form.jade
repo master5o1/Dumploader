@@ -3,10 +3,10 @@ div.pasteform
         div Title:
             br
             input(type="text", name="pasted_title")
-            select(name="pasted_type", disabled="disabled")
-                option(value="txt", selected="selected") TXT
-                option(value="js") JS
-                option(value="php") PHP
+            select(name="pasted_type")
+                option(value="txt", selected="selected") .txt
+                each ext in file_extensions
+                    option(value="#{ext}") .#{ext}
         div Paste text:
             br
             textarea(name="pasted_text")

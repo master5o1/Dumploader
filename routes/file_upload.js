@@ -2,6 +2,8 @@ var fs = require('fs');
 var storage = require('../storage');
 var site = require('../site_strings').site;
 var url = require('url');
+
+var crypto = require('crypto');
 /*
  * GET /upload
  */
@@ -14,18 +16,18 @@ exports.form = function(req, res){
         error = req_url.query.error;
     }
     if (true) { // off by defualt because it loads full size images coz I haven't got thumbnails sorted.
-        recent_images = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1 }).sort({uploadDate: -1}).limit(9);
+        recent_images = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {aliases: 1, filename: 1, metadata: 1}).sort({uploadDate: -1}).limit(9);
         recent_images.toArray(function(err, recent){
             var r_images = [];
             recent.forEach(function(element){
-                this.push({id: element._id.toString(36)});
+                this.push({id: element.aliases.toString(36), name: element.filename});
             }, r_images);
             var meta = storage.db.collection('fs.meta');
-            most_viewed = meta.find({contentType: /^image\/[^gif].*/}, {file_id: 1}).sort({views: -1}).limit(9);
+            most_viewed = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {aliases: 1, filename: 1, metadata: 1}).sort({"metadata.views": -1, uploadDate: -1}).limit(9);
             most_viewed.toArray(function(err,most) {
                 var m_images = [];
                 most.forEach(function(element){
-                    this.push({id: element.file_id.toString(36)});
+                    this.push({id: element.aliases.toString(36), name: element.filename});
                 }, m_images);
                 res.render('file/form', {
                     site: site,
@@ -57,7 +59,7 @@ exports.upload = function(req, res) {
             res.redirect('/upload/?error=Dunno what happened there.');
         } else {
             storage.add_file(req.files.uploaded_file, function(file){
-                res.redirect('/info/' + file._id.toString(36) + '/' + file.filename);
+                res.redirect('/info/' + file.aliases.toString(36) + '/' + file.filename);
             });
         }
     });
@@ -67,8 +69,8 @@ exports.upload = function(req, res) {
  * GET /info/:id/:filename?
  */
 exports.info = function(req, res){
-    var fileId = parseInt(req.params.id, 36);
-    storage.get_file(fileId, function(file) {
+    var file_id = parseInt(req.params.id, 36);
+    storage.get_file(file_id, function(file) {
         file_size = (function(size) {
             if (size < 1024) return size + ' B';
             units = ['B', 'K', 'M', 'G', 'T', 'P'];
@@ -78,21 +80,22 @@ exports.info = function(req, res){
             }
             return parseInt(size*100)/100 + ' ' + units.shift() + 'iB';
         })(file.length);
+        var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
         res.render('file/info', {
             site: site,
             tagline: 'File Information',
             image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
-            paste: ((file.contentType.match(/^text.*$|.*javascript$|.*php$/)) ? 'true' : 'false'),
+            paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
             bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
             file: {
                 name: file.filename,
-                id: file._id.toString(36),
+                id: file.aliases.toString(36),
                 date: file.uploadDate,
                 md5: file.md5,
                 size: file_size,
                 length: file.length,
                 type: file.contentType,
-                views: file.meta.views,
+                views: file.metadata.views,
             },
             host: req.headers.host,
         });
@@ -105,7 +108,8 @@ exports.info = function(req, res){
 exports.view = function(req, res){
     var file_id = parseInt(req.params.id, 36);
     storage.get_file(file_id, function(file) {
-        storage.db.collection('fs.meta').findAndModify({query: {file_id:file_id}, update: {"$inc":{"views":1}}, 'new': true}, function(err, file_meta) { return; });
+        file.metadata.views++;
+        file.save();
         var stream = file.readStream()
         res.setHeader("Content-Type", file.contentType);
         stream.pipe(res)
@@ -138,7 +142,7 @@ exports.list = function(req, res){
     var skip = req.params.skip;
     var limit = 25;
     if (typeof skip == undefined || skip == undefined || skip == 'undefined' || skip <= 0) skip = 0;
-    file_list = storage.gridfs.find({}, {_id: 1, filename: 1, uploadDate: 1, length: 1}).sort({uploadDate: -1}).skip(skip).limit(limit);
+    file_list = storage.gridfs.find({}, {aliases: 1, filename: 1, uploadDate: 1, length: 1, metadata: 1}).sort({uploadDate: -1}).skip(skip).limit(limit);
     file_list.toArray(function(err, value){
         var current_count = value.length;
         var file_list = [];
@@ -162,7 +166,7 @@ exports.list = function(req, res){
                     + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
             return date;
             })(element.uploadDate);
-            this.push({file_id: element._id.toString(36), file_name: element.filename, file_date: element.uploadDate, file_size: file_size});
+            this.push({file_id: element.aliases.toString(36), file_name: element.filename, file_date: element.uploadDate, file_size: file_size, file_views: element.metadata.views});
         }, file_list);
         res.render('file/list', {
             site: site,

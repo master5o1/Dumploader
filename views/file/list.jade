@@ -3,6 +3,7 @@ table.list
         tr
             td.name Filename
             td.size Size
+            td.info Views
             td.info Info
             td.date Date
     tbody
@@ -12,6 +13,7 @@ table.list
                     td.name
                         a(href="/view/#{item.file_id}/#{item.file_name}") #{item.file_name}
                     td.size= item.file_size
+                    td.info= item.file_views
                     td.info
                         a(href="/info/#{item.file_id}/#{item.file_name}") info
                     td.date= item.file_date
@@ -20,6 +22,7 @@ table.list
                     td.name
                         a(href="/view/#{item.file_id}/#{item.file_name}") #{item.file_name}
                     td.size= item.file_size
+                    td.info= item.file_views
                     td.info
                         a(href="/info/#{item.file_id}/#{item.file_name}") info
                     td.date= item.file_date
@@ -30,6 +33,7 @@ table.list
                     | Previous Page
                 else
                     a(href="/list/files/#{next_skip-limit-limit}") Previous Page
+            td &nbsp;
             td &nbsp;
             td &nbsp;
             td(style="text-align: right;")

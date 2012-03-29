@@ -14,11 +14,18 @@ exports.form = function(req, res){
         show_error = 'true';
         error = req_url.query.error;
     }
+    var extensions = [
+        //'txt', // this is already written and 'selected' in paste.jade
+        'js',
+        'php',
+        'json',
+    ];
     res.render('pastebin/form', {
         site: site,
         tagline: 'Paste It Here',
         show_error: show_error,
         error: error,
+        file_extensions: extensions
     })
 };
 
@@ -29,12 +36,21 @@ exports.handler = function(req, res) {
     if (req.body.pasted_text.length == 0) {
         res.redirect('/paste?error=Try entering some text this time.')
     } else {
+        var name = ((req.body.pasted_title != '') ? req.body.pasted_title : 'untitled');
+        var extension = '.' + req.body.pasted_type;
+        var contentTypes = {
+            txt: 'text/plain',
+            js: 'application/javascript',
+            php: 'application/x-php',
+            json: 'application/json',
+        };
         var paste = {
-            name: ((req.body.pasted_title != '') ? req.body.pasted_title : 'untitled'),
-            text: req.body.pasted_text
+            name: name + extension,
+            text: req.body.pasted_text,
+            contentType: contentTypes[req.body.pasted_type]
         }
         storage.add_paste(paste, function(file){ 
-            res.redirect('/info/' + file._id.toString(36))
+            res.redirect('/info/' + file.aliases.toString(36))
         });
     }
 };
@@ -45,7 +61,8 @@ exports.handler = function(req, res) {
 exports.view = function(req, res) {
     var file_id = parseInt(req.params.id, 36);
     storage.get_file(file_id, function(file) {
-        if ( file.contentType.match(/^text.*$|^.*javascript$|^.*php$/) ) {
+        var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
+        if ( file.contentType.match(types_regex) ) {
             var stream = file.readStream()
             stream.on('data', function(data){
                 var paste = data.toString();
@@ -54,14 +71,14 @@ exports.view = function(req, res) {
                 lines.forEach(function(element, index) {
                     this[index] = element.replace('\r','\r\n');
                 }, lines_data);
-                lines = lines_data;
-                storage.db.collection('fs.meta').findAndModify({query: {file_id:file_id}, update: {"$inc":{"views":1}}, 'new': true}, function(err, file_meta) { return; });
+                file.metadata.views++;
+                file.save();
                 res.render('pastebin/view', {
                     site: site,
                     tagline: 'Lines Numbered For Your Viewing Pleasure',
                     file_id: req.params.id,
                     file_name: file.filename,
-                    lines: lines,
+                    lines: lines_data,
                     paste_data: paste,
                 })
             });

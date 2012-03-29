@@ -10,15 +10,15 @@ div.uploadform
         p Accepts any file. Some more info, etc.
 if featured_images.last.length > 0 && featured_images.most.length > 0
     div.featured-images.left
-        h2 Most Recent Images
+        h2 Recent Images
         div
             each image in featured_images.last
-                a(href="/info/#{image.id}")
-                    img(src="/thumb/#{image.id}")
+                a(href="/info/#{image.id}/#{image.name}")
+                    img(src="/thumb/#{image.id}/#{image.name}")
     div.featured-images.right
-        h2 Most Viewed Images
+        h2 Viewed Images
         div
             each image in featured_images.most
-                a(href="/info/#{image.id}")
-                    img(src="/thumb/#{image.id}")
+                a(href="/info/#{image.id}/#{image.name}")
+                    img(src="/thumb/#{image.id}/#{image.name}")
 div.clearall
