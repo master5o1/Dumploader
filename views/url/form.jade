@@ -6,3 +6,21 @@ div.linkform
         input(type="submit", name="submit_link", value="Submit")
         if show_error == 'true'
             div.error #{error}
+if featured_links.last.length > 0 && featured_links.most.length > 0
+    div.featured-links.left
+        h2 Recent Links
+        ol
+            each link, i in featured_links.last
+                li
+                    a(href="/link/#{link.id}/info") info
+                    |  for 
+                    a(href="/link/#{link.id}") #{link.url}
+    div.featured-links.right
+        h2 Top Links
+        ol
+            each link in featured_links.most
+                li
+                    a(href="/link/#{link.id}/info") info
+                    |  for 
+                    a(href="/link/#{link.id}") #{link.url}
+div.clearall

@@ -13,12 +13,38 @@ exports.form = function(req, res){
         show_error = 'true';
         error = req_url.query.error;
     }
-    res.render('url/form', {
-        site: site,
-        tagline: "URL Shortening",
-        show_error: show_error,
-        error: error,
-    })
+    if (true) {
+         recent_links = storage.db.collection('links').find({}, {link_id: 1, link_url: 1, created: 1, hits: 1}).sort({created: -1}).limit(10);
+         recent_links.toArray(function(err, recent){
+             var r_links = [];
+             recent.forEach(function(element){
+                 this.push({id: element.link_id.toString(36), url: element.link_url});
+             }, r_links);
+             most_viewed = storage.db.collection('links').find({}, {link_id: 1, link_url: 1, created: 1, hits: 1}).sort({hits: -1, created: -1}).limit(10);
+             most_viewed.toArray(function(err,most) {
+                 var m_links = [];
+                 most.forEach(function(element){
+                     this.push({id: element.link_id.toString(36), url: element.link_url});
+                 }, m_links);
+                    res.render('url/form', {
+                        site: site,
+                        featured_links: { most: m_links, last: r_links },
+                        tagline: "URL Shortening",
+                        show_error: show_error,
+                        error: error,
+                    })
+             });
+         });
+    } else {
+        var links = [];
+        res.render('url/form', {
+            site: site,
+            featured_links: { top: links, last: links },
+            tagline: "URL Shortening",
+            show_error: show_error,
+            error: error,
+        })
+    }
 };
 
 /*

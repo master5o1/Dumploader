@@ -150,6 +150,7 @@ div.uploadform {
     background: #eeeeee;
 }
 
+div.featured-links h2,
 div.featured-images h2 {
     text-align: left;
     font-variant: small-caps;
@@ -184,6 +185,7 @@ div.featured-images h2 {
     background-size: 25px 25px;
 }
 
+div.featured-links,
 div.featured-images {
     background: #eee;
     border: solid 1px #00b7ff;
@@ -193,15 +195,18 @@ div.featured-images {
     display: inline-block;
     height: 370px;
 }
+div.featured-links { text-align: left; height: 370px; overflow: hidden; line-height: 2.4em; }
 
 div.featured-images div {
     padding: 0 15px;
 }
 
+div.featured-links.left,
 div.featured-images.left {
     margin: 20px 10px 0 0;
     float: left;
 }
+div.featured-links.right,
 div.featured-images.right {
     margin: 20px 0 0 10px;
     float: right;
@@ -336,7 +341,7 @@ dl.file-info dt.img {
     display: none;
 }
 
-dl.file-info img.uploaded_image { max-width: 848px; display: inline-block; }
+dl.file-info img.uploaded_image { max-width: 848px; max-height: 225px; display: inline-block; }
 
 div.error,
 span.error {
