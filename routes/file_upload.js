@@ -136,7 +136,7 @@ exports.thumb = function(req, res){
  */
 exports.list = function(req, res){
     var skip = req.params.skip;
-    var limit = 50;
+    var limit = 25;
     if (typeof skip == undefined || skip == undefined || skip == 'undefined' || skip <= 0) skip = 0;
     file_list = storage.gridfs.find({}, {_id: 1, filename: 1, uploadDate: 1, length: 1}).sort({uploadDate: -1}).skip(skip).limit(limit);
     file_list.toArray(function(err, value){

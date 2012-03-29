@@ -70,7 +70,7 @@ exports.redirect = function(req, res){
  */
 exports.list = function(req, res){
     var skip = req.params.skip;
-    var limit = 50;
+    var limit = 25;
     if (typeof skip == undefined || skip == undefined || skip == 'undefined' || skip <= 0) skip = 0;
     link_list = storage.db.collection('links').find({}, {link_id: 1, link_url: 1, created: 1, hits: 1}).sort({_id: -1}).skip(skip).limit(limit);
     link_list.toArray(function(err, value){

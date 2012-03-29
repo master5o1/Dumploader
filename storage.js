@@ -35,13 +35,14 @@ exports.add_file = function(uploaded_file, callback) {
                 fs.createReadStream(uploaded_file.path + '-thumb').pipe(thumb_stream);
             });
         }
+        var stream = file.writeStream()
+        fs.createReadStream(uploaded_file.path).pipe(stream)
         var meta = db.collection('fs.meta').insert({
             file_id: file._id,
             views: 0,
+            filename: file.filename,
             contentType: file.contentType,
         });
-        var stream = file.writeStream()
-        fs.createReadStream(uploaded_file.path).pipe(stream)
         callback(file);
     });
 }
@@ -61,7 +62,7 @@ exports.get_file = function(file_id, callback) {
 exports.get_thumb = function(file_id, callback) {
     thumbs.findOne({_id: file_id}, function (err, file) {
         if (!err && file) {
-                callback(file);
+            callback(file);
         }
     })
 }
