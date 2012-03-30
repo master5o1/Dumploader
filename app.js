@@ -13,10 +13,12 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
+  app.set('view options', { pretty: true });
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+  var oneYear = 31557600000;
+  app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
 });
 
 app.configure('development', function(){
@@ -29,7 +31,6 @@ app.configure('production', function(){
 
 // ROUTES:
 // Redirects
-app.get('/index', function(req, res){ res.redirect('/'); });
 app.get('/info', function(req, res){ res.redirect('/'); });
 app.get('/view', function(req, res){ res.redirect('/'); });
 

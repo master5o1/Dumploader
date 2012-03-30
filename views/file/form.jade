@@ -14,11 +14,11 @@ if featured_images.last.length > 0 && featured_images.most.length > 0
         div
             each image in featured_images.last
                 a(href="/info/#{image.id}/#{image.name}")
-                    img(src="/thumb/#{image.id}/#{image.name}")
+                    img(src="/thumb/#{image.id}/#{image.name}", title='#{image.title}', alt='#{image.name}')
     div.featured-images.right
         h2 Top Images
         div
             each image in featured_images.most
                 a(href="/info/#{image.id}/#{image.name}")
-                    img(src="/thumb/#{image.id}/#{image.name}")
+                    img(src="/thumb/#{image.id}/#{image.name}", title='#{image.title}', alt='#{image.name}')
 div.clearall

@@ -145,7 +145,7 @@ div.linkform,
 div.pasteform,
 div.uploadform {
     min-height: 50px;
-    padding: 25px 100px;
+    padding: 25px 98px;
     border: solid 1px #00B7FF;
     background: #eeeeee;
 }
@@ -195,7 +195,7 @@ div.featured-images {
     display: inline-block;
     height: 370px;
 }
-div.featured-links { text-align: left; height: 370px; overflow: hidden; line-height: 2.4em; }
+div.featured-links { text-align: left; height: 335px; overflow: hidden; line-height: 2.0em; }
 
 div.featured-images div {
     padding: 0 15px;
@@ -247,6 +247,7 @@ div.uploadform input[type="file"] {
     padding: 4px 1px 3px 2px;
     margin: 1px 5px 0 0;
     background: #f5f5f5;
+    display: inline-block;
 }
 
 div.uploadform div.info {
@@ -269,11 +270,10 @@ div.uploadform input[type="submit"] {
 
 div.pasteform input[type="text"] {
     font-family: "monospace";
-    width: 565px;
-    margin: 0 25px 0 5px;
+    width: 575px;
+    margin: 0 15px 0 5px;
     border: solid 1px #00B7FF;
-    height: 1.2em;
-    font-size: 1.2em;
+    font-size: 1.1em;
     line-height: 1.4em;
     background: #f5f5f5;
 }
@@ -316,7 +316,7 @@ dl.link-info dt {
     font-weight: bold;
     text-align: right;
     display: inline-block;
-    width: 115px;
+    width: 110px;
     padding: 0;
     margin: 0 5px 0 25px;
 }
@@ -378,37 +378,52 @@ div.paste {
     background-image: -moz-linear-gradient(#eee 50%, #e5e5e5 50%, #e5e5e5);
     background-image: -o-linear-gradient(#eee 50%, #e5e5e5 50%, #e5e5e5);
     background-image: linear-gradient(#eee 50%, #e5e5e5 50%, #e5e5e5);
-    -webkit-background-size: 0px 2.9em !important; /* !important so that below doesn't reset it to -moz- one. */
+    -webkit-background-size: 0px 3.2em !important; /* !important so that below doesn't reset it to -moz- one. */
     background-size: 1px 3.2em; /* -moz- doesn't seem to do anything */
     /* Can do Opera/IE later if I can be bothered. */
 }
 
 div.line-numbers {
+    min-height: 31.6em;
     float: left;
     width: 3.5%;
     color: #666;
     background: #eee;
     background: rgba(238,238,238,0.60);
-    padding: 0 0 1.2em;
+    padding: 0 0 1.1em;
+    margin: 0;
+    line-height: 1.6em;
     border-right: solid 1px #00B7FF;
 }
 
 div.lines {
     height: inherit;
+    min-height: 32.65em;
     float: left;
     width: 96%;
     color: #333;
     overflow-x: auto;
-    padding: 0 0 1.2em;
-    /*border-left: solid 1px #00B7FF;*/
+    padding: 0;
+    margin: 0 0.1em 0 0.15em;
+    line-height: 1.6em;
 }
 
-div.line-number,
-div.line-even,
-div.line-odd {
-    padding: 0.2em 0.3em;
+div.lines span {
     white-space: pre;
-    line-height: 1.2em;
+}
+
+div.line-number span {
+    padding: 0 0.3em;
+    margin: 0;
+    line-height: 1.6em;
+    white-space: pre;
+}
+
+/* These might not even be used anymore.  Dunno if I'll use the again. */
+div.line-odd,
+div.line-even {
+    padding: 0;
+    margin: 0;
 }
 
 table.list {

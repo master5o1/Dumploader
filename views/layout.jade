@@ -2,6 +2,7 @@
 html
     head
         title= site.title
+        script(type='text/javascript', src='/javascripts/script.js')
         link(rel='stylesheet', href='/stylesheets/style.css')
     body
         div.heading
@@ -20,11 +21,12 @@ html
                 div.list
                     a(href="/list/files") List Files
                     a(href="/list/links") List Links
-        div.main!= body
+        div.main
+            != body
         div.footer
             span
                 a(href="https://github.com/master5o1/Dumploader/") git
-                &nbsp;|
+                | &nbsp;|
                 a(href="/page/about") about
                 //-
                     span.copyright dumploader &copy; 2012 

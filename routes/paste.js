@@ -50,7 +50,7 @@ exports.handler = function(req, res) {
             contentType: contentTypes[req.body.pasted_type]
         }
         storage.add_paste(paste, function(file){ 
-            res.redirect('/info/' + file.aliases.toString(36))
+            res.redirect('/info/' + file._id.bytes.toString('base64').replace('/','-'))
         });
     }
 };
@@ -59,7 +59,7 @@ exports.handler = function(req, res) {
  * GET /paste/:id/:name?
  */
 exports.view = function(req, res) {
-    var file_id = parseInt(req.params.id, 36);
+    var file_id = new Buffer(req.params.id.replace('-','/'), 'base64');
     storage.get_file(file_id, function(file) {
         var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
         if ( file.contentType.match(types_regex) ) {

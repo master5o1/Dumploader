@@ -2,6 +2,8 @@ div.paste-title
     span Filename: 
         span.paste-filename= file_name
     span.paste-viewinfo
+        a(style="cursor: pointer;", onclick="selectAll('lines');") select all
+        &nbsp;&mdash;
         a(href="/view/#{file_id}/#{file_name}") view
         &nbsp;&mdash;
         a(href="/info/#{file_id}/#{file_name}") info
@@ -9,11 +11,9 @@ div.paste-title
 div.paste
     div.line-numbers
         each line, i in lines
-            div.line-number #{i+1}
-    div.lines
-        each line, i in lines
-            if i%2 == 0
-                div.line-even= line
-            else
-                div.line-odd= line
+            div.line-number
+                span #{i+1}
+    div#lines.lines
+        span
+            #{paste_data}
     div.clearall

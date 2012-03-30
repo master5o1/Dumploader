@@ -13,21 +13,19 @@ exports.db = db;
 
 exports.add_file = function(uploaded_file, callback) {
     db.collection('fs.files').count(function(err, value){
-        var file_id = (new Date()).getTime();
         var file = gridfs.create({
             filename: uploaded_file.name,
             contentType: uploaded_file.type,
-            aliases: file_id,
             metadata: {
                 views: 0,
             }
         })
+        file.save()
         if (uploaded_file.type.match(/^image\/[^svg].*/)) {
             var thumb = thumbs.create({
+                _id: new Mongolian.ObjectId(file._id.bytes),
                 filename: uploaded_file.name,
                 contentType: 'image/png',
-                file_id: file_id,
-                aliases: file_id,
             });
             im.resize({
                 srcPath: uploaded_file.path,
@@ -39,32 +37,34 @@ exports.add_file = function(uploaded_file, callback) {
                 var thumb_stream = thumb.writeStream();
                 fs.createReadStream(uploaded_file.path + '-thumb').pipe(thumb_stream);
             });
+            thumb.save();
         } else if (uploaded_file.type.match(/^image\/svg.*/)) {
             var thumb = thumbs.create({
+                _id: new Mongolian.ObjectId(file._id.bytes),
                 filename: uploaded_file.name,
                 contentType: uploaded_file.type,
-                file_id: file_id,
-                aliases: file_id,
             });
             var thumb_stream = thumb.writeStream();
             fs.createReadStream(uploaded_file.path).pipe(thumb_stream);
+            thumb.save();
         }
         var stream = file.writeStream()
         fs.createReadStream(uploaded_file.path).pipe(stream)
+        file.save();
         callback(file);
     });
 }
 
-exports.get_file = function(file_id, callback) {
-    gridfs.findOne({aliases: file_id}, function (err, file) {
+exports.get_file = function(id_buffer, callback) {
+    gridfs.findOne({_id: new Mongolian.ObjectId(id_buffer)}, function (err, file) {
         if (!err && file) {
             callback(file);
         }
     })
 }
 
-exports.get_thumb = function(file_id, callback) {
-    thumbs.findOne({aliases: file_id}, function (err, file) {
+exports.get_thumb = function(id_buffer, callback) {
+    thumbs.findOne({_id: new Mongolian.ObjectId(id_buffer) }, function (err, file) {
         if (!err && file) {
             callback(file);
         }
@@ -73,20 +73,20 @@ exports.get_thumb = function(file_id, callback) {
 
 exports.add_paste = function(paste, callback) {
     db.collection('fs.files').count(function(err, value){
-        var file_id = (new Date()).getTime(); // May not be Atomic but it works, I guess.
         var file = gridfs.create({
             filename: paste.name,
             contentType: paste.contentType,
-            aliases: file_id,
             metadata: {
                 views: 0,
             }
         })
+        file.save();
         var stream = file.writeStream()
-        fs.writeFile("/tmp/paste-" + file.aliases.toString(36), paste.text, function(err) {
+        fs.writeFile("/tmp/paste-" + file._id.bytes.toString('base64').replace('/','-'), paste.text, function(err) {
             if (err) throw err;
-            fs.createReadStream("/tmp/paste-" + file.aliases.toString(36)).pipe(stream);
-            fs.unlink("/tmp/paste-" + file.aliases.toString(36));
+            fs.createReadStream("/tmp/paste-" + file._id.bytes.toString('base64').replace('/','-')).pipe(stream);
+            fs.unlink("/tmp/paste-" + file._id.bytes.toString('base64').replace('/','-'));
+            file.save()
             callback(file);
         })
     });
