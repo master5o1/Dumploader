@@ -38,6 +38,27 @@ exports.add_file = function(uploaded_file, callback) {
                 fs.createReadStream(uploaded_file.path + '-thumb').pipe(thumb_stream);
             });
             thumb.save();
+        } else if (uploaded_file.type.match(/^image\/gif/)) {
+            var thumb = thumbs.create({
+                _id: new Mongolian.ObjectId(file._id.bytes),
+                filename: uploaded_file.name,
+                contentType: 'image/gif',
+            });
+            im.convert([uploaded_file.path, '-coalesce', uploaded_file.path + '-coalesce'], function(err, metadata){
+                if (err) throw err
+                im.resize({
+                    srcPath: uploaded_file.path + '-coalesce',
+                    dstPath: uploaded_file.path + '-thumb',
+                    format: 'gif',
+                    width:   150
+                }, function(err, stdout, stderr){
+                    if (err) throw err
+                    var thumb_stream = thumb.writeStream();
+                    fs.createReadStream(uploaded_file.path + '-thumb').pipe(thumb_stream);
+                });
+            })
+            thumb.save();
+            console.log(thumb);
         } else if (uploaded_file.type.match(/^image\/svg.*/)) {
             var thumb = thumbs.create({
                 _id: new Mongolian.ObjectId(file._id.bytes),

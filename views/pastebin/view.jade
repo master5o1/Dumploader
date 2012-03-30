@@ -2,7 +2,8 @@ div.paste-title
     span Filename: 
         span.paste-filename= file_name
     span.paste-viewinfo
-        a(style="cursor: pointer;", onclick="selectAll('lines');") select all
+        a(onclick="(function(objId){(function(){if(document.selection){document.selection.empty();}else if(window.getSelection){window.getSelection().removeAllRanges();}})();if(document.selection){var range = document.body.createTextRange();range.moveToElementText(document.getElementById(objId));range.select();}else if (window.getSelection) {var range = document.createRange();range.selectNode(document.getElementById(objId));window.getSelection().addRange(range);}})('lines');",
+        style="cursor: pointer;") select all
         &nbsp;&mdash;
         a(href="/view/#{file_id}/#{file_name}") view
         &nbsp;&mdash;

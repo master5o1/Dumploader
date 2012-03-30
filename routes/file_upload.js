@@ -15,14 +15,14 @@ exports.form = function(req, res){
         error = req_url.query.error;
     }
     if (true) { // off by defualt because it loads full size images coz I haven't got thumbnails sorted.
-        recent_images = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1, uploadDate: 1}).sort({uploadDate: -1}).limit(9);
+        recent_images = storage.gridfs.find({contentType: /^image\/.*/}, {_id: 1, filename: 1, uploadDate: 1}).sort({uploadDate: -1}).limit(9);
         recent_images.toArray(function(err, recent){
             var r_images = [];
             recent.forEach(function(element){
                 this.push({id: element._id.bytes.toString('base64').replace('/','-'), name: element.filename, title: element.uploadDate});
             }, r_images);
             var meta = storage.db.collection('fs.meta');
-            most_viewed = storage.gridfs.find({contentType: /^image\/[^gif].*/}, {_id: 1, filename: 1, metadata: 1}).sort({"metadata.views": -1, uploadDate: -1}).limit(9);
+            most_viewed = storage.gridfs.find({contentType: /^image\/.*/}, {_id: 1, filename: 1, metadata: 1}).sort({"metadata.views": -1, uploadDate: -1}).limit(9);
             most_viewed.toArray(function(err,most) {
                 var m_images = [];
                 most.forEach(function(element){
