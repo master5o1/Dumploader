@@ -58,7 +58,6 @@ exports.add_file = function(uploaded_file, callback) {
                 });
             })
             thumb.save();
-            console.log(thumb);
         } else if (uploaded_file.type.match(/^image\/svg.*/)) {
             var thumb = thumbs.create({
                 _id: new Mongolian.ObjectId(file._id.bytes),
