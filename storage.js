@@ -21,7 +21,7 @@ exports.add_file = function(uploaded_file, callback) {
             }
         })
         file.save()
-        if (uploaded_file.type.match(/^image\/[^svg].*/)) {
+        if (uploaded_file.type.match(/^image\/[^svg|gif].*/)) {
             var thumb = thumbs.create({
                 _id: new Mongolian.ObjectId(file._id.bytes),
                 filename: uploaded_file.name,
