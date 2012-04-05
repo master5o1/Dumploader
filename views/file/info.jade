@@ -3,7 +3,7 @@ dl.file-info
         dt.img Image:
         dd.img
             a(href="/view/#{file.id}/#{file.name}")
-                img.uploaded_image(src="/thumb/#{file.id}/#{file.name}")
+                img.uploaded_image(src="/thumb/#{file.id}/#{file.name}?#{(new Date()).getTime()}")
     dt Filename:
     dd= file.name
     dt Date uploaded:

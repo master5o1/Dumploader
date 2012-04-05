@@ -108,11 +108,25 @@ exports.info = function(req, res){
 exports.view = function(req, res){
     var file_id = new Buffer(req.params.id.replace('-','/'), 'base64');
     storage.get_file(file_id, function(file) {
-        file.metadata.views++;
-        file.save();
         var stream = file.readStream();
-        res.setHeader("Content-Type", file.contentType);
-        stream.pipe(res)
+        if (!!req.headers['if-modified-since']) {
+            res.statusCode = 304;
+        }
+        res.setHeader('Date', (new Date()).toUTCString());
+        res.setHeader('Last-Modified', (new Date(file.uploadDate)).toUTCString());
+        res.setHeader('Cache-Control', 'public, max-age=' + (60*525600));
+        res.setHeader('Content-Type', file.contentType);
+        if (!req.headers['if-modified-since']) {
+            file.metadata.views++;
+            file.save();
+            var stream = file.readStream();
+            stream.on('data', function (chunk) {
+                res.write(chunk);
+            });
+            stream.on('end', function() {
+                res.end();
+            })
+        } else { res.end(); }
     });
 };
 
@@ -124,9 +138,22 @@ exports.thumb = function(req, res){
     storage.get_file(file_id, function(file) {
         if (file.contentType.match(/^image\/.*/)) {
             storage.get_thumb(file_id, function(thumb) {
-                var stream = thumb.readStream();
+                if (!!req.headers['if-modified-since']) {
+                    res.statusCode = 304;
+                }
+                res.setHeader('Date', (new Date()).toUTCString());
+                res.setHeader('Last-Modified', (new Date(thumb.uploadDate)).toUTCString());
+                res.setHeader('Cache-Control', 'public, max-age=' + (60*525600));
                 res.setHeader('Content-Type', thumb.contentType);
-                stream.pipe(res);
+                if (!req.headers['if-modified-since']) {
+                    var stream = thumb.readStream();
+                    stream.on('data', function (chunk) {
+                        res.write(chunk);
+                    });
+                    stream.on('end', function() {
+                        res.end();
+                    })
+                } else { res.end(); }
             });
         } else {
             var name = ((typeof req.params.name != undefined && req.params.name != '') ? '/' + req.params.name : '');
