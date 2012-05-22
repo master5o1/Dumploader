@@ -3,7 +3,7 @@ Dumploader
 
 Dumploader is a file-uploading and pasting service.
 
-It is modelled after and loosely clones [Omploader](http://omploader.org/).
+It is modelled after [Omploader](http://omploader.org/).
 
 Licence
 -------

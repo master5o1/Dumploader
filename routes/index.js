@@ -5,3 +5,4 @@ exports.file = require('./file_upload');
 exports.link = require('./link_shortener');
 exports.paste = require('./paste');
 exports.pages = require('./pages');
+exports.item = require('./search');

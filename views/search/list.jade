@@ -1,0 +1,43 @@
+table.list
+    thead
+        tr
+            td.name Filename
+            td.size Size
+            td.info Views
+            td.info Info
+            td.date Date
+    tbody
+        each item, i in file_list
+            if i%2 == 1
+                tr.odd
+                    td.name
+                        a(href="/view/#{item.file_id}/#{item.file_name}") #{item.file_name}
+                    td.size= item.file_size
+                    td.info= item.file_views
+                    td.info
+                        a(href="/info/#{item.file_id}/#{item.file_name}") info
+                    td.date= item.file_date
+            else
+                tr
+                    td.name
+                        a(href="/view/#{item.file_id}/#{item.file_name}") #{item.file_name}
+                    td.size= item.file_size
+                    td.info= item.file_views
+                    td.info
+                        a(href="/info/#{item.file_id}/#{item.file_name}") info
+                    td.date= item.file_date
+    tfoot
+        tr.skip
+            td(style="text-align: left;")
+                if next_skip-limit-limit < 0
+                    | Previous Page
+                else
+                    a(href="/search/#{next_skip-limit-limit}?q=#{query}") Previous Page
+            td &nbsp;
+            td &nbsp;
+            td &nbsp;
+            td(style="text-align: right;")
+                if show_next
+                    a(href="/search/#{next_skip}?q=#{query}") Next Page
+                else
+                    | Next Page

@@ -59,9 +59,9 @@ div.tagline h2 {
     margin: 0;
     padding: 0;
     display: inline-block;
-    width: 75%;
+    width: 50%;
     height: 25px;
-    line-height: 30px;
+    line-height: 25px;
     color: white;
 }
 
@@ -71,20 +71,38 @@ div.tagline div.list {
     padding: 0;
     display: inline-block;
     text-align: right;
-    width: 25%;
+    line-height: 25px;
+    height: 25px;
+    width: 50%;
 }
 div.list a {
     display: inline-block;
     padding: 0;
     margin: 0 0 0 10px;
-    height: 25px;
-    line-height: 30px;
+    line-height: 25px;
     font-weight: bold;
     color: white;
 }
 div.list a:hover {
     color: #e5e5e5;
 }
+div.list form {
+    display: inline-block;
+}
+div.list form input[type="text"] {
+    border: solid 1px #00B6FF;
+    display: inline-block;
+    width: 150px;
+    padding: 2px;
+    background-color: #aaa;
+    background-color: rgba(255,255,255,0.90);
+    color: #666;
+}
+
+div.list form input[type="text"]:focus {
+    color: #000;
+}
+
 div.heading div.tagline {
     font-variant: small-caps;
     margin: 0;
@@ -150,6 +168,15 @@ div.uploadform {
     background: #eeeeee;
 }
 
+div.emptysearch {
+    min-height: 50px;
+    padding: 25px 98px;
+    border: solid 1px #00B7FF;
+    background: #eeeeee;
+    text-align: center;
+    font-size: 2.0em;
+}
+
 div.featured-links h2,
 div.featured-images h2 {
     text-align: left;
@@ -195,7 +222,7 @@ div.featured-images {
     display: inline-block;
     height: 370px;
 }
-div.featured-links { text-align: left; height: 335px; overflow: hidden; line-height: 2.0em; }
+div.featured-links { text-align: left; height: 335px; overflow: hidden; white-space: nowrap; line-height: 2.0em; }
 
 div.featured-images div {
     padding: 0 15px;

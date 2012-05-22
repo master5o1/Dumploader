@@ -34,6 +34,8 @@ app.configure('production', function(){
 app.get('/info', function(req, res){ res.redirect('/'); });
 app.get('/view', function(req, res){ res.redirect('/'); });
 
+// Search
+app.get('/search/:skip?', routes.item.find);
 // Files
 app.get('/', routes.file.form);
 app.get('/upload', routes.file.form);

@@ -15,11 +15,18 @@ html
                     a(href="/paste") Paste Text
                     a(href="/link") Shorten URL
                     //-a(href="/page/about") About
+                    span(style="font-size: 0.8em; float: right;")
+                        a(href="/list/files") List files
+                        a(href="/list/links") Links links
             div.tagline
                 h2= tagline
                 div.list
-                    a(href="/list/files") List Files
-                    a(href="/list/links") List Links
+                    a(href="/search") Search
+                    form(action="/search", method="get", enctype="multipart/form-data")
+                        if typeof query != 'undefined'
+                            input(type="text", name="q", value="#{query}")
+                        else
+                            input(type="text", name="q", value="")
         div.main
             != body
         div.footer
@@ -27,6 +34,7 @@ html
                 a(href="https://github.com/master5o1/Dumploader/") git
                 | &nbsp;|
                 a(href="/page/about") about
-                //-
-                    span.copyright dumploader &copy; 2012 
+                span.copyright
+                    //- 
+                        | dumploader &copy; 2012 
                         a(href="http://master5o1.com/") Jason Schwarzenberger

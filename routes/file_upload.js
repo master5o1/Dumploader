@@ -184,14 +184,14 @@ exports.list = function(req, res){
                 return parseInt(size*100)/100 + ' ' + units.shift() + 'iB';
             })(element.length);
             element.uploadDate = (function(uploadDate){
-            var element = {uploadDate: uploadDate};
-            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()-1] + ' '
-                    + element.uploadDate.getUTCFullYear() + ' '
-                    + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
-                    + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
-                    + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
-            return date;
+                var element = {uploadDate: uploadDate};
+                var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()-1] + ' '
+                        + element.uploadDate.getUTCFullYear() + ' '
+                        + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
+                        + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
+                        + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
+                return date;
             })(element.uploadDate);
             this.push({file_id: element._id.bytes.toString('base64').replace('/','-'), file_name: element.filename, file_date: element.uploadDate, file_size: file_size, file_views: element.metadata.views});
         }, file_list);

@@ -1,6 +1,13 @@
 {
     "name": "dumploader"
-  , "version": "0.0.1"
+  , "description": "Dumploader is a file-uploading and pasting service."
+  , "version": "0.5.0"
+  , "homepage": "https://github.com/master5o1/Dumploader"
+  , "author": "Jason Schwarzenberger"
+  , "repository": {
+      "type": "git"
+    , "url": "https://master5o1@github.com/master5o1/Dumploader.git"
+  }
   , "private": true
   , "dependencies": {
       "express": "~2.5.8"
