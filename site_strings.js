@@ -9,6 +9,8 @@ exports.site = {
           , "Just throw it on the pile."
           , "Powered by a roaring V8 engine."
           , "UPLOAD ALL THE THINGS!"
+          , "Probably not good HCI"
+          , "Blind people might not enjoy this"
         ];
         return s[Math.floor(Math.random()*s.length)];
     }
