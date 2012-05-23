@@ -42,9 +42,9 @@ app.get('/random', routes.file.random);
 app.get('/', routes.file.form);
 app.get('/upload', routes.file.form);
 app.post('/upload', routes.file.upload);
-app.get('/view/:id?/:name?', routes.file.view);
+app.get('/view/:id/:name?', routes.file.view);
 app.get('/thumb/:id/:name?', routes.file.thumb);
-app.get('/info/:id?/:name?', routes.file.info);
+app.get('/info/:id/:name?', routes.file.info);
 app.get('/list/files/:skip?', routes.file.list);
 app.get('/list', function(req, res){ res.redirect('/list/files'); });
 
