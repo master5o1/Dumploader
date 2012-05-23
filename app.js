@@ -30,19 +30,21 @@ app.configure('production', function(){
 });
 
 // ROUTES:
-// Redirects
 app.get('/info', function(req, res){ res.redirect('/'); });
 app.get('/view', function(req, res){ res.redirect('/'); });
 
 // Search
 app.get('/search/:skip?', routes.item.find);
+
+app.get('/random', routes.file.random);
+
 // Files
 app.get('/', routes.file.form);
 app.get('/upload', routes.file.form);
 app.post('/upload', routes.file.upload);
-app.get('/view/:id/:name?', routes.file.view);
+app.get('/view/:id?/:name?', routes.file.view);
 app.get('/thumb/:id/:name?', routes.file.thumb);
-app.get('/info/:id/:name?', routes.file.info);
+app.get('/info/:id?/:name?', routes.file.info);
 app.get('/list/files/:skip?', routes.file.list);
 app.get('/list', function(req, res){ res.redirect('/list/files'); });
 
@@ -57,6 +59,7 @@ app.get('/list/links/:skip?', routes.link.list);
 app.get('/paste', routes.paste.form);
 app.post('/paste', routes.paste.handler);
 app.get('/paste/:id/:name?', routes.paste.view);
+app.post('/comment/:id', routes.paste.comment);
 
 // Other pages
 app.get('/page', routes.pages.index);

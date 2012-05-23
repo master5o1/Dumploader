@@ -1,8 +1,10 @@
 div.uploadform
     form(action="/upload", method="post", enctype="multipart/form-data")
         span Upload File:
+        span(style="margin-left: 340px;") Your Name:
         br
         input(type="file", name="uploaded_file")
+        input(type="text", name="file_author", value="anonymous")
         input(type="submit", name="submit_file", value="Upload")
         if show_error
             div.error= error

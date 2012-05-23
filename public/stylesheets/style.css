@@ -177,6 +177,7 @@ div.emptysearch {
     font-size: 2.0em;
 }
 
+div.comments h2,
 div.featured-links h2,
 div.featured-images h2 {
     text-align: left;
@@ -270,7 +271,16 @@ div.linkform input[type="submit"] {
 
 div.uploadform input[type="file"] {
     border: solid 1px #00B7FF;
-    width: 607px;
+    width: 400px;
+    padding: 4px 1px 3px 2px;
+    margin: 1px 5px 0 0;
+    background: #f5f5f5;
+    display: inline-block;
+}
+div.uploadform input[type="text"] {
+    border: solid 1px #00B7FF;
+    width: 187px;
+    line-height: 21px;
     padding: 4px 1px 3px 2px;
     margin: 1px 5px 0 0;
     background: #f5f5f5;
@@ -297,18 +307,23 @@ div.uploadform input[type="submit"] {
 
 div.pasteform input[type="text"] {
     font-family: "monospace";
-    width: 575px;
-    margin: 0 15px 0 5px;
+    width: 580px;
+    margin: 1px 5px 0 5px;
+    padding: 4px 0 3px 0;
     border: solid 1px #00B7FF;
     font-size: 1.1em;
-    line-height: 1.4em;
+    line-height: 21px;
     background: #f5f5f5;
+}
+
+div.pasteform input[name="paste_author"] {
+    width: 200px;
 }
 
 div.pasteform select {
     width: 100px;
-    margin: 0;
-    padding: 0;
+    margin: 1px 0 0;
+    padding: 4px 0 3px;
     line-height: 1.4em;
     font-size: 1.2em;
 }
@@ -364,11 +379,70 @@ dl.file-info dd.img {
     text-align: center;
     vertical-align: middle;
 }
+
 dl.file-info dt.img {
     display: none;
 }
 
+dl.slide dd.nav span,
+dl.slide dd.nav a {
+    font-size: 1.2em;
+}
+
 dl.file-info img.uploaded_image { max-width: 848px; max-height: 225px; display: inline-block; }
+
+dl.slide img.uploaded_image { max-width: 848px; max-height: 500px; }
+
+div.comments {
+    margin: 15px 0 0;
+    padding-bottom: 1.0em;
+    background: #eee;
+    border: solid 1px #00b7ff;
+    border-top: none;
+    text-align: left;
+    display: block;
+    width: auto;
+    height: auto;
+}
+
+div.comments input[type="text"] {
+    border: solid 1px #ddd;
+    background: #f5f5f5;
+    width: 250px;
+}
+
+div.comments input[type="submit"] {
+    float: right;
+    padding: 0.6em;
+}
+
+div.comments textarea {
+    border: solid 1px #ddd;
+    background: #f5f5f5;
+    display: block;
+    width: 790px;
+    max-width: 790px;
+    float: left;
+}
+
+div.comments form {
+    margin: 1.0em;
+}
+
+div.comment {
+    margin: 1.0em 1.0em 0;
+    background: #ddd;
+    border-radius: 5px;
+    padding: 0.5em;
+}
+
+div.comment p {
+    margin: 0;
+}
+
+div.comment span {
+    font-size: 0.9em;
+}
 
 div.error,
 span.error {
@@ -411,7 +485,7 @@ div.paste {
 }
 
 div.line-numbers {
-    min-height: 31.6em;
+    min-height: 21.6em;
     float: left;
     width: 3.5%;
     color: #666;
@@ -425,7 +499,7 @@ div.line-numbers {
 
 div.lines {
     height: inherit;
-    min-height: 32.65em;
+    min-height: 22.65em;
     float: left;
     width: 96%;
     color: #333;

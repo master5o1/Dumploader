@@ -18,6 +18,7 @@ exports.add_file = function(uploaded_file, callback) {
             contentType: uploaded_file.type,
             metadata: {
                 views: 0,
+                author: uploaded_file.author,
             }
         })
         file.save()
@@ -79,6 +80,8 @@ exports.get_file = function(id_buffer, callback) {
     gridfs.findOne({_id: new Mongolian.ObjectId(id_buffer)}, function (err, file) {
         if (!err && file) {
             callback(file);
+        } else {
+            callback(null);
         }
     })
 }
@@ -87,6 +90,8 @@ exports.get_thumb = function(id_buffer, callback) {
     thumbs.findOne({_id: new Mongolian.ObjectId(id_buffer) }, function (err, file) {
         if (!err && file) {
             callback(file);
+        } else {
+            callback(null);
         }
     })
 }
@@ -98,6 +103,7 @@ exports.add_paste = function(paste, callback) {
             contentType: paste.contentType,
             metadata: {
                 views: 0,
+                author: paste.author,
             }
         })
         file.save();

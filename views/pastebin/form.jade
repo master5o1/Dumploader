@@ -1,6 +1,11 @@
 div.pasteform
     form(action="/paste", method="post", enctype="multipart/form-data")
-        div Title:
+        div
+            | Your Name:
+            br
+            input(type="text", name="paste_author")
+            br
+            | Title:
             br
             input(type="text", name="pasted_title")
             select(name="pasted_type")

@@ -8,6 +8,15 @@ dl.file-info
     dd= file.name
     dt Date uploaded:
     dd= file.date
+    dt Uploaded by:
+    dd
+        if typeof file.author == 'undefined' || file.author == ''
+            if typeof file.author == 'undefined' || file.author == ''
+                a(href="/username/anonymous") anonymous
+            else
+                a(href="/username/#{file.author}") #{file.author}
+        else
+            a(href="/username/#{file.author}") #{file.author}
     dt MD5 sum:
     dd= file.md5
     dt Size:
@@ -16,6 +25,8 @@ dl.file-info
     dd= file.type
     dt Views
     dd= file.views
+    dt Comments
+    dd= file.comments.length
     dt Info URL:
     dd
         a(href="/info/#{file.id}/#{file.name}") #{host}/info/#{file.id}/#{file.name}
@@ -30,3 +41,29 @@ dl.file-info
         dt Thumbnail URL: 
         dd
             a(href="/thumb/#{file.id}/#{file.name}") #{host}/thumb/#{file.id}/#{file.name}
+div.comments
+    h2 Comments:
+    form(action="/comment/#{file.id}", method="post", enctype="multipart/form-data")
+        input(type="text", name="comment_author", value="anonymous")
+        input(type="text", name="comment_title", value="#{file.reply_title}")
+        textarea(type="text", name="comment_text")
+        input(type="submit", name="comment_submit", value="Submit")
+    div(style="clear: both;")
+    each item, i in file.comments
+        div.comment
+            a(name="#{item.id}")
+            span
+                if typeof item.author == 'undefined' || item.author == ''
+                    a(href="/username/anonymous") anonymous
+                else
+                    a(href="/username/#{item.author}") #{item.author}
+                |  on #{item.date} 
+                if item.replies == 0
+                    a(href="/info/#{item.id}/#{item.title}") reply
+                else
+                    a(href="/info/#{item.id}/#{item.title}") show #{item.replies} #{item.reply}
+                span(style="float: right;")
+                    a(href="/report/#{item.id}") report
+                    |  &bull; 
+                    a(href="\##{item.id}") \#
+            p #{item.text}

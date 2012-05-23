@@ -2,7 +2,7 @@ var fs = require('fs');
 var storage = require('../storage');
 var site = require('../site_strings').site;
 var url = require('url');
-
+var Mongolian = require("mongolian");
 /*
  * GET /upload
  */
@@ -58,6 +58,7 @@ exports.upload = function(req, res) {
         if (err || (req.files.uploaded_file.name == '' && req.files.uploaded_file.size == 0)) {
             res.redirect('/upload/?error=Dunno what happened there.');
         } else {
+            req.files.uploaded_file.author = req.body.file_author;
             storage.add_file(req.files.uploaded_file, function(file){
                 res.redirect('/info/' + file._id.bytes.toString('base64').replace('/','-') + '/' + file.filename);
             });
@@ -66,12 +67,33 @@ exports.upload = function(req, res) {
 };
 
 /*
+ * GET /random
+ */
+exports.random = function(req, res){
+    storage.db.collection('fs.files').count(function(e,count){
+        if (count <= 0) {
+            res.redirect('/');
+            return;
+        }
+        var skip = Math.floor(Math.random()*(count));
+        storage.gridfs.find({},{"filename":1}).skip(skip).limit(1).toArray(function(err, files) {
+            var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
+            if (files[0].contentType.match(types_regex)) {
+                res.redirect('/paste/' + files[0]._id.bytes.toString('base64').replace('/','-') + '/' + files[0].filename);
+            } else {
+                res.redirect('/info/' + files[0]._id.bytes.toString('base64').replace('/','-') + '/' + files[0].filename);
+            }
+        });
+    });
+}
+
+/*
  * GET /info/:id/:filename?
  */
 exports.info = function(req, res){
     var file_id = new Buffer(req.params.id.replace('-','/'), 'base64');
     storage.get_file(file_id, function(file) {
-        file_size = (function(size) {
+        var file_size = (function(size) {
             if (size < 1024) return size + ' B';
             units = ['B', 'K', 'M', 'G', 'T', 'P'];
             while (size >= 1024) {
@@ -80,26 +102,90 @@ exports.info = function(req, res){
             }
             return parseInt(size*100)/100 + ' ' + units.shift() + 'iB';
         })(file.length);
+        var reply_title = file.filename;
+        if (reply_title.substr(0, "Re: ".length) != "Re: ") reply_title = "Re: " + reply_title;
         var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
-        res.render('file/info', {
-            site: site,
-            tagline: 'File Information',
-            image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
-            paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
-            bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
-            file: {
-                name: file.filename,
-                id: file._id.bytes.toString('base64').replace('/','-'),
-                date: file.uploadDate,
-                md5: file.md5,
-                size: file_size,
-                length: file.length,
-                type: file.contentType,
-                views: file.metadata.views,
-            },
-            host: req.headers.host,
-        });
-    })
+        var comments = [];
+        if (typeof file.metadata.comments == 'undefined' || file.metadata.comments.length == 0) {
+            res.render('file/info', {
+                site: site,
+                tagline: 'File Information',
+                image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
+                paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
+                bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
+                file: {
+                    author: file.metadata.author,
+                    name: file.filename,
+                    id: file._id.bytes.toString('base64').replace('/','-'),
+                    date: file.uploadDate,
+                    md5: file.md5,
+                    size: file_size,
+                    length: file.length,
+                    type: file.contentType,
+                    views: file.metadata.views,
+                    reply_title: reply_title,
+                    comments: []
+                },
+                host: req.headers.host,
+            });
+        } else {
+            file.metadata.comments.reverse().forEach(function(comment_id, index, array) {
+                storage.gridfs.findOne({_id: new Mongolian.ObjectId(comment_id)}, function (err, comment_file) {
+                    if (!err && comment_file) {
+                        var replies = 0;
+                        if (typeof comment_file.metadata.comments != 'undefined') replies = comment_file.metadata.comments.length;
+                        var comment = {
+                            id: comment_file._id.bytes.toString('base64').replace('/','-'),
+                            title: comment_file.filename,
+                            author: comment_file.metadata.author,
+                            date: comment_file.uploadDate,
+                            text: null,
+                            replies: replies,
+                            reply: (replies==1)? 'reply':'replies'
+                        };
+                        comment.date = (function(uploadDate){
+                            var element = {uploadDate: uploadDate};
+                            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                            var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()] + ' '
+                                    + element.uploadDate.getUTCFullYear() + ' '
+                                    + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
+                                    + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
+                                    + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
+                            return date;
+                        })(comment_file.uploadDate);
+                        var stream = comment_file.readStream();
+                        stream.on('data', function (chunk) {
+                            comment.text = chunk.toString();
+                            comments.push(comment);
+                            if (comments.length == file.metadata.comments.length) {
+                                res.render('file/info', {
+                                    site: site,
+                                    tagline: 'File Information',
+                                    image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
+                                    paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
+                                    bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
+                                    file: {
+                                        author: file.metadata.author,
+                                        name: file.filename,
+                                        id: file._id.bytes.toString('base64').replace('/','-'),
+                                        date: file.uploadDate,
+                                        md5: file.md5,
+                                        size: file_size,
+                                        length: file.length,
+                                        type: file.contentType,
+                                        views: file.metadata.views,
+                                        reply_title: reply_title,
+                                        comments: comments
+                                    },
+                                    host: req.headers.host,
+                                });
+                            }
+                        });
+                    }
+                });
+            }, comments);
+        }
+    });
 };
 
 /*
