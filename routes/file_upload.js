@@ -22,12 +22,19 @@ exports.form = function(req, res){
                 this.push({id: element._id.bytes.toString('base64').replace('/','-'), name: element.filename, title: element.uploadDate});
             }, r_images);
             var meta = storage.db.collection('fs.meta');
-            most_viewed = storage.gridfs.find({contentType: /^image\/.*/}, {_id: 1, filename: 1, metadata: 1}).sort({"metadata.views": -1, uploadDate: -1}).limit(9);
+            most_viewed = storage.gridfs
+                                 .find({contentType: /^image\/.*/}, {_id: 1, filename: 1, metadata: 1})
+                                 .sort({uploadDate: -1}).limit(500)
+                                 .sort({"metadata.comments": -1, "metadata.views": -1})
+                                 .limit(9);
             most_viewed.toArray(function(err,most) {
                 var m_images = [];
                 most.forEach(function(element){
                     var viewsCount = element.metadata.views + ' view' + ((element.metadata.views == 1)? '' : 's');
-                    this.push({id: element._id.bytes.toString('base64').replace('/','-'), name: element.filename, title: viewsCount});
+                    var commentCount = 0;
+                    if (typeof element.metadata.comments != 'undefined') commentCount = element.metadata.comments.length;
+                    var elementTitle = viewsCount + ' and ' + commentCount + ' comment' + ((commentCount == 1)?'':'s');
+                    this.push({id: element._id.bytes.toString('base64').replace('/','-'), name: element.filename, title: elementTitle});
                 }, m_images);
                 res.render('file/form', {
                     site: site,
@@ -75,13 +82,22 @@ exports.random = function(req, res){
             res.redirect('/');
             return;
         }
+        var redirectCount = 0;
+        if (typeof req.params.r != 'undefined') redirectCount = parseInt(req.params.r, 10);
         var skip = Math.floor(Math.random()*(count));
         storage.gridfs.find({},{"filename":1}).skip(skip).limit(1).toArray(function(err, files) {
-            var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
+            if (files[0].filename.match(/^[^Re\.\ ].*/)) {
+            var types_regex = /^text\/plain/;
             if (files[0].contentType.match(types_regex)) {
                 res.redirect('/paste/' + files[0]._id.bytes.toString('base64').replace('/','-') + '/' + files[0].filename);
             } else {
                 res.redirect('/info/' + files[0]._id.bytes.toString('base64').replace('/','-') + '/' + files[0].filename);
+            }
+            } else {
+                if (redirectCount < 3)
+                    res.redirect('/random?r=' + (redirectCount+1));
+                else
+                    res.redirect('/');
             }
         });
     });
@@ -106,6 +122,7 @@ exports.info = function(req, res){
         if (reply_title.substr(0, "Re: ".length) != "Re: ") reply_title = "Re: " + reply_title;
         var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
         var comments = [];
+        var comment_ids = [];
         if (typeof file.metadata.comments == 'undefined' || file.metadata.comments.length == 0) {
             res.render('file/info', {
                 site: site,
@@ -124,66 +141,38 @@ exports.info = function(req, res){
                     type: file.contentType,
                     views: file.metadata.views,
                     reply_title: reply_title,
-                    comments: []
+                    comments: [],
+                    comment_count: 0,
+                    comment_ids: [],
                 },
                 host: req.headers.host,
             });
         } else {
             file.metadata.comments.reverse().forEach(function(comment_id, index, array) {
-                storage.gridfs.findOne({_id: new Mongolian.ObjectId(comment_id)}, function (err, comment_file) {
-                    if (!err && comment_file) {
-                        var replies = 0;
-                        if (typeof comment_file.metadata.comments != 'undefined') replies = comment_file.metadata.comments.length;
-                        var comment = {
-                            id: comment_file._id.bytes.toString('base64').replace('/','-'),
-                            title: comment_file.filename,
-                            author: comment_file.metadata.author,
-                            date: comment_file.uploadDate,
-                            text: null,
-                            replies: replies,
-                            reply: (replies==1)? 'reply':'replies'
-                        };
-                        comment.date = (function(uploadDate){
-                            var element = {uploadDate: uploadDate};
-                            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                            var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()] + ' '
-                                    + element.uploadDate.getUTCFullYear() + ' '
-                                    + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
-                                    + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
-                                    + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
-                            return date;
-                        })(comment_file.uploadDate);
-                        var stream = comment_file.readStream();
-                        stream.on('data', function (chunk) {
-                            comment.text = chunk.toString();
-                            comments.push(comment);
-                            if (comments.length == file.metadata.comments.length) {
-                                res.render('file/info', {
-                                    site: site,
-                                    tagline: 'File Information',
-                                    image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
-                                    paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
-                                    bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
-                                    file: {
-                                        author: file.metadata.author,
-                                        name: file.filename,
-                                        id: file._id.bytes.toString('base64').replace('/','-'),
-                                        date: file.uploadDate,
-                                        md5: file.md5,
-                                        size: file_size,
-                                        length: file.length,
-                                        type: file.contentType,
-                                        views: file.metadata.views,
-                                        reply_title: reply_title,
-                                        comments: comments
-                                    },
-                                    host: req.headers.host,
-                                });
-                            }
-                        });
-                    }
-                });
+                comment_ids.unshift(comment_id.toString('base64').replace('/','-'));
             }, comments);
+            res.render('file/info', {
+                site: site,
+                tagline: 'File Information',
+                image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
+                paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
+                bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
+                file: {
+                    author: file.metadata.author,
+                    name: file.filename,
+                    id: file._id.bytes.toString('base64').replace('/','-'),
+                    date: file.uploadDate,
+                    md5: file.md5,
+                    size: file_size,
+                    length: file.length,
+                    type: file.contentType,
+                    views: file.metadata.views,
+                    reply_title: reply_title,
+                    comment_count: comment_ids.length,
+                    comment_ids: JSON.stringify(comment_ids).replace(/\"/g,"'")
+                },
+                host: req.headers.host,
+            });
         }
     });
 };
@@ -192,6 +181,8 @@ exports.info = function(req, res){
  * GET /view/:id/:filename?
  */
 exports.view = function(req, res){
+    var json = false;
+    if (typeof req.query.json != 'undefined') json = true;
     var file_id = new Buffer(req.params.id.replace('-','/'), 'base64');
     storage.get_file(file_id, function(file) {
         var stream = file.readStream();
@@ -207,7 +198,36 @@ exports.view = function(req, res){
             file.save();
             var stream = file.readStream();
             stream.on('data', function (chunk) {
-                res.write(chunk);
+                var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
+                if ( json && file.contentType.match(types_regex) ) {
+                    var paste_date = (function(uploadDate){
+                        var element = {uploadDate: uploadDate};
+                        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()] + ' '
+                        + element.uploadDate.getUTCFullYear() + ' '
+                        + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
+                        + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
+                        + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
+                        return date;
+                    })(file.uploadDate);
+                    var paste_comments = [];
+                    if (typeof file.metadata.comments != 'undefined') {
+                        file.metadata.comments.forEach(function(com){
+                            this.push(com.toString('base64').replace('/','-'));
+                        }, paste_comments);
+                    }
+                    var paste = {
+                        id: req.params.id,
+                        title: file.filename,
+                        date: paste_date,
+                        author: file.metadata.author,
+                        comments: paste_comments,
+                        data: chunk.toString('ascii'),
+                    }
+                    res.write(JSON.stringify(paste));
+                } else {
+                    res.write(chunk);
+                }
             });
             stream.on('end', function() {
                 res.end();
@@ -255,7 +275,10 @@ exports.list = function(req, res){
     var skip = req.params.skip;
     var limit = 25;
     if (typeof skip == undefined || skip == undefined || skip == 'undefined' || skip <= 0) skip = 0;
-    file_list = storage.gridfs.find({}, {_id: 1, filename: 1, uploadDate: 1, length: 1, metadata: 1}).sort({uploadDate: -1}).skip(skip).limit(limit);
+    var filter = {filename: /^[^Re\.\ ].*/};
+    var show_comments = false;
+    if (typeof req.query.show_comments != 'undefined') { filter = {}; show_comments = true; }
+    file_list = storage.gridfs.find(filter, {_id: 1, filename: 1, uploadDate: 1, length: 1, metadata: 1}).sort({uploadDate: -1}).skip(skip).limit(limit);
     file_list.toArray(function(err, value){
         var current_count = value.length;
         var file_list = [];
@@ -279,7 +302,16 @@ exports.list = function(req, res){
                         + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
                 return date;
             })(element.uploadDate);
-            this.push({file_id: element._id.bytes.toString('base64').replace('/','-'), file_name: element.filename, file_date: element.uploadDate, file_size: file_size, file_views: element.metadata.views});
+            var comment_count = 0;
+            if (typeof element.metadata.comments != 'undefined') comment_count = element.metadata.comments.length;
+            this.push({
+                file_id: element._id.bytes.toString('base64').replace('/','-'),
+                file_name: element.filename,
+                file_date: element.uploadDate,
+                file_size: file_size,
+                file_views: element.metadata.views,
+                comment_count: comment_count
+            });
         }, file_list);
         res.render('file/list', {
             site: site,
@@ -289,6 +321,7 @@ exports.list = function(req, res){
             show_next: ((current_count == limit)? true : false),
             next_skip: (limit + parseInt(skip)),
             limit: limit,
+            show_comments: ((show_comments)?'?show_comments':'')
         });
     });
 };

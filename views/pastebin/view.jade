@@ -24,24 +24,8 @@ div.comments
     form(action="/comment/#{file.id}?paste=true", method="post", enctype="multipart/form-data")
         input(type="text", name="comment_author", value="anonymous")
         input(type="text", name="comment_title", value="#{file.reply_title}")
-        textarea(type="text", name="comment_text")
+        textarea(type="text", name="comment_text", onfocus="this.style.height='5em'", onblur="this.style.height='auto'")
         input(type="submit", name="comment_submit", value="Submit")
     div(style="clear: both;")
-    each item, i in file.comments
-        div.comment
-            a(name="#{item.id}")
-            span
-                if typeof item.author == 'undefined' || item.author == ''
-                    a(href="/username/anonymous") anonymous
-                else
-                    a(href="/username/#{item.author}") #{item.author}
-                |  on #{item.date} 
-                if item.replies == 0
-                    a(href="/paste/#{item.id}/#{item.title}") reply
-                else
-                    a(href="/paste/#{item.id}/#{item.title}") show #{item.replies} #{item.reply}
-                span(style="float: right;")
-                    a(href="/report/#{item.id}") report
-                    |  - 
-                    a(href="\##{item.id}") \#
-            p #{item.text}
+    div(id="replies-#{file.id}", style="display: none;")
+    script getAndShow('#{file.id}', #{file.comment_ids}, null, -1);

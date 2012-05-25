@@ -34,9 +34,9 @@ app.get('/info', function(req, res){ res.redirect('/'); });
 app.get('/view', function(req, res){ res.redirect('/'); });
 
 // Search
-app.get('/search/:skip?', routes.item.find);
-
+app.get('/search/:skip?', routes.search.find);
 app.get('/random', routes.file.random);
+app.get('/username/:username', routes.search.username);
 
 // Files
 app.get('/', routes.file.form);

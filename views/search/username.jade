@@ -1,0 +1,12 @@
+div.searchusername
+    if user_files.images.length > 0 && user_files.images.length > 0
+        div(style="max-height: 200px; text-align: center; overflow-y: noscroll; overflow-x: scroll; white-space: nowrap;")
+            each image in user_files.images
+                a(href="/info/#{image.id}/#{image.filename}")
+                    img(src="/thumb/#{image.id}/#{image.filename}", title='#{image.filename}', alt='#{image.filename}', style="vertical-align: middle;")
+if user_files.text.comment_ids.length > 0 && user_files.text.comment_ids.length > 0
+    div.user-comments
+        h2 Comments By #{username}:
+        div(id="replies-#{user_files.text.id}", style="display: none;")
+        script getAndShow('#{user_files.text.id}', #{user_files.text.comment_ids}, null, 20);
+div.clearall

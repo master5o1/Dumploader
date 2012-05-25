@@ -4,6 +4,48 @@ var site = require('../site_strings').site;
 var url = require('url');
 
 /*
+ * GET /username/:username
+ */
+ 
+exports.username = function(req, res) {
+    storage.db.collection('fs.files').find({ "metadata.author": req.params.username }).sort({uploadDate: -1}).toArray(function(err, files) {
+        if (files.length == 0 || req.params.username.match(/anonymous/i)) { //
+            res.render('search/username', {
+                site: site,
+                tagline: "Name not found",
+                username: '',
+                user_files: { images: [], text: {id: 'comments', comment_ids: []}, other: []}
+            });
+        }
+        var user_files = { images: [], text: {id: 'comments', comment_ids: []}, other: []};
+        files.forEach(function(f) {
+            if (f.contentType.match(/^image.*/)) {
+                var comments = 0;
+                if (typeof f.metadata.comments != 'undefined') comments = f.metadata.comments.length;
+                var image = {
+                    id: f._id.bytes.toString('base64').replace('/','-'),
+                    filename: f.filename,
+                    views: f.metadata.views,
+                    comments: comments,
+                };
+                this.images.push(image);
+            } else if (f.contentType.match(/^text\/plain/)) {
+                this.text.comment_ids.unshift(f._id.bytes.toString('base64').replace('/','-'));
+            } else {
+                this.other.push(f);
+            }
+        }, user_files);
+        user_files.text.comment_ids = JSON.stringify(user_files.text.comment_ids).replace(/\"/g,"'");
+        res.render('search/username', {
+            site: site,
+            tagline: 'Images by ' + req.params.username,
+            username: req.params.username,
+            user_files: user_files,
+        });
+    });
+}
+
+/*
  * GET /search/:skip?q=<string>
  * GET /search?q=<string>
  */

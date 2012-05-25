@@ -4,6 +4,7 @@ table.list
             td.name Filename
             td.size Size
             td.info Views
+            td.info Comments
             td.info Info
             td.date Date
     tbody
@@ -14,6 +15,7 @@ table.list
                         a(href="/view/#{item.file_id}/#{item.file_name}") #{item.file_name}
                     td.size= item.file_size
                     td.info= item.file_views
+                    td.info= item.comment_count
                     td.info
                         a(href="/info/#{item.file_id}/#{item.file_name}") info
                     td.date= item.file_date
@@ -23,6 +25,7 @@ table.list
                         a(href="/view/#{item.file_id}/#{item.file_name}") #{item.file_name}
                     td.size= item.file_size
                     td.info= item.file_views
+                    td.info= item.comment_count
                     td.info
                         a(href="/info/#{item.file_id}/#{item.file_name}") info
                     td.date= item.file_date
@@ -32,12 +35,18 @@ table.list
                 if next_skip-limit-limit < 0
                     | Previous Page
                 else
-                    a(href="/list/files/#{next_skip-limit-limit}") Previous Page
+                    a(href="/list/files/#{next_skip-limit-limit}#{show_comments}", style="display: inline;") Previous Page
+                span(style="float: right;")
+                    if show_comments == ''
+                        a(href="?show_comments") Show comments
+                    else
+                        a(href="?") Hide comments
+            td &nbsp;
             td &nbsp;
             td &nbsp;
             td &nbsp;
             td(style="text-align: right;")
                 if show_next
-                    a(href="/list/files/#{next_skip}") Next Page
+                    a(href="/list/files/#{next_skip}#{show_comments}", style="display: inline;") Next Page
                 else
                     | Next Page

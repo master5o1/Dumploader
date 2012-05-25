@@ -168,6 +168,13 @@ div.uploadform {
     background: #eeeeee;
 }
 
+div.searchusername {
+    min-height: 50px;
+    padding: 0;
+    border: solid 1px #00B7FF;
+    background: #eee;
+}
+
 div.emptysearch {
     min-height: 50px;
     padding: 25px 98px;
@@ -177,6 +184,7 @@ div.emptysearch {
     font-size: 2.0em;
 }
 
+div.user-comments h2,
 div.comments h2,
 div.featured-links h2,
 div.featured-images h2 {
@@ -393,6 +401,7 @@ dl.file-info img.uploaded_image { max-width: 848px; max-height: 225px; display: 
 
 dl.slide img.uploaded_image { max-width: 848px; max-height: 500px; }
 
+div.user-comments,
 div.comments {
     margin: 15px 0 0;
     padding-bottom: 1.0em;
@@ -403,6 +412,14 @@ div.comments {
     display: block;
     width: auto;
     height: auto;
+}
+
+div.user-comments {
+}
+
+div.user-other {
+    display: inline-block;
+    width: 438px;
 }
 
 div.comments input[type="text"] {
@@ -434,6 +451,19 @@ div.comment {
     background: #ddd;
     border-radius: 5px;
     padding: 0.5em;
+}
+
+div.subcomment .comment { margin-left: 0; }
+
+div.subcomment {
+    clear: both;
+    margin: 0.5em 0 auto 1.5em;
+    padding-left: 0.75em;
+    border-left: solid 0.3em #e5e5e5;
+}
+
+div.subcomment .subcomment {
+    margin-left: 0.5em;
 }
 
 div.comment p {
@@ -485,7 +515,7 @@ div.paste {
 }
 
 div.line-numbers {
-    min-height: 21.6em;
+    min-height: 11.6em;
     float: left;
     width: 3.5%;
     color: #666;
@@ -499,7 +529,7 @@ div.line-numbers {
 
 div.lines {
     height: inherit;
-    min-height: 22.65em;
+    min-height: 12.65em;
     float: left;
     width: 96%;
     color: #333;
@@ -546,7 +576,7 @@ table.list tfoot tr:hover {
     color: #444;
 }
 
-table.list td.name { width: 60%; padding: 0 0 0 5px; }
+table.list td.name { width: 55%; padding: 0 0 0 5px; }
 table.list thead td.info, table.list td.size { text-align: right; }
 table.list thead td.info, table.list td.info { text-align: center; font-variant: small-caps; padding: 0 5px; width: 5%; }
 table.list thead td.date, table.list td.date { text-align: left; width: 16.5%; }

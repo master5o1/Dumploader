@@ -66,6 +66,7 @@ exports.view = function(req, res) {
         if (reply_title.substr(0, "Re: ".length) != "Re: ") reply_title = "Re: " + reply_title;
         var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
         var comments = [];
+        var comment_ids = [];
         if ( file.contentType.match(types_regex) ) {
             if (typeof file.metadata.comments == 'undefined' || file.metadata.comments.length == 0) {
                 var stream = file.readStream()
@@ -90,6 +91,7 @@ exports.view = function(req, res) {
                             name: file.filename,
                             id: file._id.bytes.toString('base64').replace('/','-'),
                             reply_title: reply_title,
+                            comment_count: 0,
                             comments: comments
                         },
                         host: req.headers.host
@@ -107,55 +109,25 @@ exports.view = function(req, res) {
                     file.metadata.views++;
                     file.save();
                     file.metadata.comments.reverse().forEach(function(comment_id, index, array) {
-                        storage.gridfs.findOne({_id: new Mongolian.ObjectId(comment_id)}, function (err, comment_file) {
-                            if (!err && comment_file) {
-                                var replies = 0;
-                                if (typeof comment_file.metadata.comments != 'undefined') replies = comment_file.metadata.comments.length;
-                                var comment = {
-                                    id: comment_file._id.bytes.toString('base64').replace('/','-'),
-                                    title: comment_file.filename,
-                                    author: comment_file.metadata.author,
-                                    date: comment_file.uploadDate,
-                                    text: null,
-                                    replies: replies,
-                                    reply: (replies==1)? 'reply':'replies'
-                                };
-                                comment.date = (function(uploadDate){
-                                    var element = {uploadDate: uploadDate};
-                                    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                                    var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()] + ' '
-                                            + element.uploadDate.getUTCFullYear() + ' '
-                                            + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
-                                            + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
-                                            + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
-                                    return date;
-                                })(comment_file.uploadDate);
-                                var stream = comment_file.readStream();
-                                stream.on('data', function (chunk) {
-                                    comment.text = chunk.toString();
-                                    comments.push(comment);
-                                    if (comments.length == file.metadata.comments.length) {
-                                        res.render('pastebin/view', {
-                                            site: site,
-                                            tagline: 'Lines Numbered For Your Viewing Pleasure',
-                                            file_id: req.params.id,
-                                            file_name: file.filename,
-                                            lines: lines_data,
-                                            paste_data: paste,
-                                            file: {
-                                                author: file.metadata.author,
-                                                name: file.filename,
-                                                id: file._id.bytes.toString('base64').replace('/','-'),
-                                                reply_title: reply_title,
-                                                comments: comments
-                                            },
-                                            host: req.headers.host
-                                        })
-                                    }
-                                });
-                            }
-                        });
+                        comment_ids.unshift(comment_id.toString('base64').replace('/','-'));
                     }, comments);
+                    res.render('pastebin/view', {
+                        site: site,
+                        tagline: 'Lines Numbered For Your Viewing Pleasure',
+                        file_id: req.params.id,
+                        file_name: file.filename,
+                        lines: lines_data,
+                        paste_data: paste,
+                        file: {
+                            author: file.metadata.author,
+                            name: file.filename,
+                            id: file._id.bytes.toString('base64').replace('/','-'),
+                            reply_title: reply_title,
+                            comment_count: comment_ids.length,
+                            comment_ids: JSON.stringify(comment_ids).replace(/\"/g,"'")
+                        },
+                        host: req.headers.host
+                    })
                 });
             }
         } else {
