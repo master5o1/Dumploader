@@ -14,5 +14,8 @@
     , "jade": ">= 0.0.1"
     , "mongolian": "~0.1.17"
     , "imagemagick": "~0.1.2"
+    , "passport" : "~0.1.10"
+    , "passport-google" : "~0.2.0"
+    , "passport-local" : "~0.1.3"
   }
 }

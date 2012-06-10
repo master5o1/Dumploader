@@ -21,3 +21,6 @@ Requirements
 * Mongolian DeadBeef (0.1.17)
 * ImageMagick (0.1.2)
 * Jade (0.22.0)
+* Passport (0.1.10)
+* Passport-Google (0.2.0)
+* Passport-Local (0.1.3)
