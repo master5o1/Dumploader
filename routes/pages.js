@@ -1,8 +1,9 @@
-var site = require('../site_strings').site;
+var site = require('../site_strings');
 
 var authorised_pages = {
-    "about": {template: "about", title: "About Dumploader"},
-    "404": {template: "errors/404", title: "Can't find it, bro."}
+     "about": {template: "about", title: "About Dumploader"}
+   , "404": {template: "errors/404", title: "Can't find it, bro."}
+   , "privacy" : {template: "privacy", title: "Privacy Policy"}
 };
 
 /*
@@ -17,7 +18,8 @@ exports.run = function(req, res){
         }
     };
     res.render('pages/' + pages(req.params.name).template, {
-        site: site,
+        site: site.site,
+        current_user: site.current_user(req),
         tagline: pages(req.params.name).title,
     })
 };
@@ -33,8 +35,9 @@ exports.index = function(req, res){
         pages.unshift(p1);
     }
     res.render('pages/index', {
-     site: site,
-     tagline: 'List of pages',
-     pages: pages
+        site: site.site,
+        current_user: site.current_user(req),
+        tagline: 'List of pages',
+        pages: pages
     });
 };

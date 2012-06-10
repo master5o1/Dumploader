@@ -1,0 +1,44 @@
+div.user_profile
+    dl
+        dt Username:
+        dd
+            if displayed_user.id == current_user.id
+                input.change_user_detail#change_username(type="text", value="#{displayed_user.username}", onfocus="hide('change_username_error');", onblur="checkUserName('#{displayed_user.username}', this.value)")
+                span#change_username_error(style="color: red; vertical-align: middle; font-size: 1.5em; display: inline-block; width: 1.0em; visibility: hidden;") &times;
+                span(style="color: #666; font-size: 0.85em;") Maximum 100 of these characters: A-Z a-z 0-9 and _
+            else
+                span #{displayed_user.username}
+        dt Display Name:
+        dd
+            if displayed_user.id == current_user.id
+                input.change_user_detail#change_displayName(type="text", value="#{displayed_user.displayName}", onfocus="hide('change_displayName_error');", onblur="changeDisplayName('#{displayed_user.username}', this.value)")
+                span#change_displayName_error(style="color: red; font-size: 1.5em; vertical-align: middle; display: inline-block; width: 1.0em; visibility: hidden;") &times;
+            else
+                span #{displayed_user.displayName}
+        dt.textareachange_user Description:
+        dd.textareachange_user
+            if displayed_user.id == current_user.id
+                textarea.change_user_detail#change_description(onkeypress="checksize(this)", onfocus="hide('change_description_error');", onblur="changeDescription('#{displayed_user.username}', this.value)")= displayed_user.description
+                span#change_description_error(style="color: red; font-size: 1.5em; vertical-align: top; display: inline-block; width: 1.0em; visibility: hidden;") &times;
+            else
+                p.change_user_detail(style="margin: 0;")
+                    if (typeof displayed_user.description != 'undefined')
+                        each line in displayed_user.description.split('\n')
+                            #{line}
+                            br
+    if displayed_user.id == current_user.id
+        div(style="text-align: center; margin: 0 0 1em; font-size: 0.85em; color: #666;") Click outside of the text areas to save your username, display name or description.
+        fieldset(style="background-color: #e9e9e9; margin: 0 5em 2em; border: solid 1px #aaa; border-top: double 3px #aaa;")
+            legend(style="color: #666; font-size: 0.8em;") From Google (private)
+            dl(style="margin: 0;")
+                dt Name:
+                dd #{displayed_user.name.givenName} #{displayed_user.name.middleName} #{displayed_user.name.familyName}
+                dt Emails:
+                dd
+                    each email in displayed_user.emails
+                        span #{email.value}
+    p either here
+    div.clearall
+p
+    | or here in its own box of sorts.
+    | That's where I'll put file lists.

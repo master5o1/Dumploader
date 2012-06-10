@@ -25,10 +25,14 @@ function getComments(parent_id, reply, comments, iter) {
                 anchor.setAttribute('name', parent_id + '.' + comment_id);
             comment.appendChild(anchor);
             var span = document.createElement('span');
-                var author = document.createElement('a');
-                    author.setAttribute('href','/username/' + the_comment.author);
-                    author.innerHTML = the_comment.author;
-                span.appendChild(author);
+            	if (the_comment.author.username == 'anonymous') {
+            		span.innerHTML += 'anonymous';
+            	} else {
+	                var author = document.createElement('a');
+	                    author.setAttribute('href','/user/' + the_comment.author.username);
+	                    author.innerHTML = the_comment.author.displayName;
+	                span.appendChild(author);
+                }
                 span.innerHTML += ' on ' + the_comment.date + ' ';
                 var reply = document.createElement('a');
                     reply.setAttribute('href', '/paste/' + comment_id + '/' + the_comment.title);

@@ -18,7 +18,7 @@ exports.add_file = function(uploaded_file, callback) {
             contentType: uploaded_file.type,
             metadata: {
                 views: 0,
-                author: uploaded_file.author,
+                author_id: uploaded_file.author_id,
             }
         })
         file.save()
@@ -103,7 +103,7 @@ exports.add_paste = function(paste, callback) {
             contentType: paste.contentType,
             metadata: {
                 views: 0,
-                author: paste.author,
+                author_id: paste.author_id,
             }
         })
         file.save();

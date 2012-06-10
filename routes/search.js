@@ -1,54 +1,13 @@
 var fs = require('fs');
 var storage = require('../storage');
-var site = require('../site_strings').site;
+var site = require('../site_strings');
 var url = require('url');
-
-/*
- * GET /username/:username
- */
- 
-exports.username = function(req, res) {
-    storage.db.collection('fs.files').find({ "metadata.author": req.params.username }).sort({uploadDate: -1}).toArray(function(err, files) {
-        if (files.length == 0 || req.params.username.match(/anonymous/i)) { //
-            res.render('search/username', {
-                site: site,
-                tagline: "Name not found",
-                username: '',
-                user_files: { images: [], text: {id: 'comments', comment_ids: []}, other: []}
-            });
-        }
-        var user_files = { images: [], text: {id: 'comments', comment_ids: []}, other: []};
-        files.forEach(function(f) {
-            if (f.contentType.match(/^image.*/)) {
-                var comments = 0;
-                if (typeof f.metadata.comments != 'undefined') comments = f.metadata.comments.length;
-                var image = {
-                    id: f._id.bytes.toString('base64').replace('/','-'),
-                    filename: f.filename,
-                    views: f.metadata.views,
-                    comments: comments,
-                };
-                this.images.push(image);
-            } else if (f.contentType.match(/^text\/plain/)) {
-                this.text.comment_ids.unshift(f._id.bytes.toString('base64').replace('/','-'));
-            } else {
-                this.other.push(f);
-            }
-        }, user_files);
-        user_files.text.comment_ids = JSON.stringify(user_files.text.comment_ids).replace(/\"/g,"'");
-        res.render('search/username', {
-            site: site,
-            tagline: 'Images by ' + req.params.username,
-            username: req.params.username,
-            user_files: user_files,
-        });
-    });
-}
 
 /*
  * GET /search/:skip?q=<string>
  * GET /search?q=<string>
  */
+
 exports.find = function(req, res){
     var keywords = '';
     if (typeof req.query.q != 'undefined') {
@@ -122,7 +81,8 @@ exports.find = function(req, res){
                 var current_count = file_list.length;
                 if (current_count > 0) {
                 res.render('search/list', {
-                    site: site,
+                    site: site.site,
+                    current_user: site.current_user(req),
                     tagline: 'Search Results',
                     file_list: file_list,
                     host: req.headers.host,
@@ -133,7 +93,8 @@ exports.find = function(req, res){
                 });
                 } else {
                     res.render('search/empty', {
-                        site: site,
+                        site: site.site,
+                        current_user: site.current_user(req),
                         tagline: 'Search Results',
                         host: req.headers.host,
                         query: keywords.join(' ')

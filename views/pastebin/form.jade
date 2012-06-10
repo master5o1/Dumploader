@@ -1,10 +1,6 @@
 div.pasteform
     form(action="/paste", method="post", enctype="multipart/form-data")
         div
-            | Your Name:
-            br
-            input(type="text", name="paste_author")
-            br
             | Title:
             br
             input(type="text", name="pasted_title")
@@ -14,7 +10,7 @@ div.pasteform
                     option(value="#{ext}") .#{ext}
         div Paste text:
             br
-            textarea(name="pasted_text")
+            textarea(name="pasted_text").
             input(type="submit", name="submit_paste", value="Submit")
             if show_error == 'true'
                 span.error #{error}

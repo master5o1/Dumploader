@@ -4,6 +4,7 @@ html
         title= site.title
         link(rel='stylesheet', href='/stylesheets/style.css')
         script(type="text/javascript", src="/javascripts/comments.js")
+        script(type="text/javascript", src="/javascripts/user.js")
     body
         div.heading
             div.branding
@@ -16,13 +17,18 @@ html
                     a(href="/paste") Paste Text
                     a(href="/link") Shorten URL
                     a(href="/random") Random File
-                    //-a(href="/page/about") About
                     span(style="font-size: 0.8em; float: right;")
-                        a(href="/list/files") List files
-                        a(href="/list/links") Links links
+                        if typeof current_user.username == 'undefined'
+                            span.like_a anonymous
+                            a#google_sign_in(href="/auth/google") Sign In
+                        else
+                            a(href="/user/#{current_user.username}") #{current_user.displayName}
+                            a(href="/logout") Sign Out
             div.tagline
                 h2= tagline
                 div.list
+                    a(href="/list/files") List files
+                    a(href="/list/links") List links
                     a(href="/search") Search
                     form(action="/search", method="get", enctype="multipart/form-data")
                         if typeof query != 'undefined'
@@ -34,6 +40,8 @@ html
         div.footer
             span
                 a(href="https://github.com/master5o1/Dumploader/") git
+                |  | 
+                a(href="/page/privacy") privacy
                 |  | 
                 a(href="/page/about") about
                 span.copyright

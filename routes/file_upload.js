@@ -1,6 +1,7 @@
 var fs = require('fs');
 var storage = require('../storage');
-var site = require('../site_strings').site;
+var user_storage = require('../user_storage');
+var site = require('../site_strings');
 var url = require('url');
 var Mongolian = require("mongolian");
 /*
@@ -14,7 +15,7 @@ exports.form = function(req, res){
         show_error = 'true';
         error = req_url.query.error;
     }
-    if (true) { // off by defualt because it loads full size images coz I haven't got thumbnails sorted.
+    if (true) {
         recent_images = storage.gridfs.find({contentType: /^image\/.*/}, {_id: 1, filename: 1, uploadDate: 1}).sort({uploadDate: -1}).limit(9);
         recent_images.toArray(function(err, recent){
             var r_images = [];
@@ -37,7 +38,8 @@ exports.form = function(req, res){
                     this.push({id: element._id.bytes.toString('base64').replace('/','-'), name: element.filename, title: elementTitle});
                 }, m_images);
                 res.render('file/form', {
-                    site: site,
+                    site: site.site,
+                    current_user: site.current_user(req),
                     tagline: 'Upload A File',
                     featured_images: { most: m_images, last: r_images },
                     show_error: show_error,
@@ -48,7 +50,8 @@ exports.form = function(req, res){
     } else {
         var images = [];
         res.render('file/form', {
-            site: site,
+            site: site.site,
+            current_user: site.current_user(req),
             tagline: 'Upload A File',
             featured_images: { top: images, last: images },
             show_error: show_error,
@@ -61,11 +64,13 @@ exports.form = function(req, res){
  * POST /upload
  */
 exports.upload = function(req, res) {
+    var current_user = site.current_user(req);
+    if (typeof current_user == 'undefined') { current_user = { _id: null } }
     fs.readFile(req.files.uploaded_file.path, function (err, data) {
         if (err || (req.files.uploaded_file.name == '' && req.files.uploaded_file.size == 0)) {
             res.redirect('/upload/?error=Dunno what happened there.');
         } else {
-            req.files.uploaded_file.author = req.body.file_author;
+            req.files.uploaded_file.author_id = current_user._id;
             storage.add_file(req.files.uploaded_file, function(file){
                 res.redirect('/info/' + file._id.bytes.toString('base64').replace('/','-') + '/' + file.filename);
             });
@@ -123,57 +128,62 @@ exports.info = function(req, res){
         var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
         var comments = [];
         var comment_ids = [];
-        if (typeof file.metadata.comments == 'undefined' || file.metadata.comments.length == 0) {
-            res.render('file/info', {
-                site: site,
-                tagline: 'File Information',
-                image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
-                paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
-                bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
-                file: {
-                    author: file.metadata.author,
-                    name: file.filename,
-                    id: file._id.bytes.toString('base64').replace('/','-'),
-                    date: file.uploadDate,
-                    md5: file.md5,
-                    size: file_size,
-                    length: file.length,
-                    type: file.contentType,
-                    views: file.metadata.views,
-                    reply_title: reply_title,
-                    comments: [],
-                    comment_count: 0,
-                    comment_ids: [],
-                },
-                host: req.headers.host,
-            });
-        } else {
-            file.metadata.comments.reverse().forEach(function(comment_id, index, array) {
-                comment_ids.unshift(comment_id.toString('base64').replace('/','-'));
-            }, comments);
-            res.render('file/info', {
-                site: site,
-                tagline: 'File Information',
-                image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
-                paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
-                bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
-                file: {
-                    author: file.metadata.author,
-                    name: file.filename,
-                    id: file._id.bytes.toString('base64').replace('/','-'),
-                    date: file.uploadDate,
-                    md5: file.md5,
-                    size: file_size,
-                    length: file.length,
-                    type: file.contentType,
-                    views: file.metadata.views,
-                    reply_title: reply_title,
-                    comment_count: comment_ids.length,
-                    comment_ids: JSON.stringify(comment_ids).replace(/\"/g,"'")
-                },
-                host: req.headers.host,
-            });
-        }
+        user_storage.user.findOne({_id: file.metadata.author_id}, function(err, user) {
+            if (!user) { user = { username: 'anonymous', displayName: 'anonymous' }; }
+            if (typeof file.metadata.comments == 'undefined' || file.metadata.comments.length == 0) {
+                res.render('file/info', {
+                    site: site.site,
+                    current_user: site.current_user(req),
+                    tagline: 'File Information',
+                    image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
+                    paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
+                    bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
+                    file: {
+                        author: user,
+                        name: file.filename,
+                        id: file._id.bytes.toString('base64').replace('/','-'),
+                        date: file.uploadDate,
+                        md5: file.md5,
+                        size: file_size,
+                        length: file.length,
+                        type: file.contentType,
+                        views: file.metadata.views,
+                        reply_title: reply_title,
+                        comments: [],
+                        comment_count: 0,
+                        comment_ids: [],
+                    },
+                    host: req.headers.host,
+                });
+            } else {
+                file.metadata.comments.reverse().forEach(function(comment_id, index, array) {
+                    comment_ids.unshift(comment_id.replace('/','-'));
+                }, comments);
+                res.render('file/info', {
+                    site: site.site,
+                    current_user: site.current_user(req),
+                    tagline: 'File Information',
+                    image: ((file.contentType.match(/^image.*/)) ? 'true' : 'false'),
+                    paste: ((file.contentType.match(types_regex)) ? 'true' : 'false'),
+                    bytes_suffix: ((file.length == 1)? 'byte' : 'bytes'),
+                    file: {
+                        author: user,
+                        name: file.filename,
+                        id: file._id.bytes.toString('base64').replace('/','-'),
+                        date: file.uploadDate,
+                        md5: file.md5,
+                        size: file_size,
+                        length: file.length,
+                        type: file.contentType,
+                        views: file.metadata.views,
+                        reply_title: reply_title,
+                        comment_count: comment_ids.length,
+                        comment_ids: JSON.stringify(comment_ids).replace(new RegExp('\"', 'g'),"'")
+                    },
+                    host: req.headers.host,
+                });
+            }
+        });
     });
 };
 
@@ -193,45 +203,55 @@ exports.view = function(req, res){
         res.setHeader('Last-Modified', (new Date(file.uploadDate)).toUTCString());
         res.setHeader('Cache-Control', 'public, max-age=' + (60*525600));
         res.setHeader('Content-Type', file.contentType);
+        if (!json)
+			res.setHeader('Content-Length', file.length);
         if (!req.headers['if-modified-since']) {
             file.metadata.views++;
             file.save();
-            var stream = file.readStream();
-            stream.on('data', function (chunk) {
-                var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
-                if ( json && file.contentType.match(types_regex) ) {
-                    var paste_date = (function(uploadDate){
-                        var element = {uploadDate: uploadDate};
-                        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                        var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()] + ' '
-                        + element.uploadDate.getUTCFullYear() + ' '
-                        + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
-                        + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
-                        + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
-                        return date;
-                    })(file.uploadDate);
-                    var paste_comments = [];
-                    if (typeof file.metadata.comments != 'undefined') {
-                        file.metadata.comments.forEach(function(com){
-                            this.push(com.toString('base64').replace('/','-'));
-                        }, paste_comments);
+            user_storage.user.findOne({_id: file.metadata.author_id}, function(err, user) {
+            	if (!user) { user = { username: 'anonymous', displayName: 'anonymous' }; }
+                var stream = file.readStream();
+                stream.on('data', function (chunk) {
+                    var types_regex = /^text.*$|^.*json|^.*javascript$|^.*php$/;
+                    if ( json && file.contentType.match(types_regex) ) {
+                        var paste_date = (function(uploadDate){
+                            var element = {uploadDate: uploadDate};
+                            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                            var date = element.uploadDate.getUTCDate() + ' ' + months[element.uploadDate.getUTCMonth()] + ' '
+                            + element.uploadDate.getUTCFullYear() + ' '
+                            + ((element.uploadDate.getUTCHours().toString().length == 1)?"0"+element.uploadDate.getUTCHours():element.uploadDate.getUTCHours()) + ':'
+                            + ((element.uploadDate.getUTCMinutes().toString().length == 1)?"0"+element.uploadDate.getUTCMinutes():element.uploadDate.getUTCMinutes()) + ':'
+                            + ((element.uploadDate.getUTCSeconds().toString().length == 1)?"0"+element.uploadDate.getUTCSeconds():element.uploadDate.getUTCSeconds());
+                            return date;
+                        })(file.uploadDate);
+                        var paste_comments = [];
+                        if (typeof file.metadata.comments != 'undefined') {
+                            file.metadata.comments.forEach(function(com){
+                                this.push(com.toString('/','-'));
+                            }, paste_comments);
+                        }
+                        var pasteUser = {
+                            username: user.username,
+                            displayName: user.displayName
+                        }
+                        var paste = {
+                            id: req.params.id,
+                            title: file.filename,
+                            author: pasteUser,
+                            date: paste_date,
+                            comments: paste_comments,
+                            data: chunk.toString('ascii'),
+                        }
+                        res.setHeader('Content-Length', JSON.stringify(paste).length);
+                        res.write(JSON.stringify(paste));
+                    } else {
+                        res.write(chunk);
                     }
-                    var paste = {
-                        id: req.params.id,
-                        title: file.filename,
-                        date: paste_date,
-                        author: file.metadata.author,
-                        comments: paste_comments,
-                        data: chunk.toString('ascii'),
-                    }
-                    res.write(JSON.stringify(paste));
-                } else {
-                    res.write(chunk);
-                }
+                });
+                stream.on('end', function() {
+                    res.end();
+                })
             });
-            stream.on('end', function() {
-                res.end();
-            })
         } else { res.end(); }
     });
 };
@@ -314,7 +334,8 @@ exports.list = function(req, res){
             });
         }, file_list);
         res.render('file/list', {
-            site: site,
+            site: site.site,
+            current_user: site.current_user(req),
             tagline: 'List of Uploaded Files',
             file_list: file_list,
             host: req.headers.host,

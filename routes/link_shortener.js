@@ -1,6 +1,6 @@
 var storage = require('../storage');
 var url = require('url');
-var site = require('../site_strings').site;
+var site = require('../site_strings');
 
 /*
  * GET /link
@@ -27,7 +27,8 @@ exports.form = function(req, res){
                      this.push({id: element.link_id.toString(36), url: element.link_url});
                  }, m_links);
                     res.render('url/form', {
-                        site: site,
+                        site: site.site,
+                        current_user: site.current_user(req),
                         featured_links: { most: m_links, last: r_links },
                         tagline: "URL Shortening",
                         show_error: show_error,
@@ -38,7 +39,8 @@ exports.form = function(req, res){
     } else {
         var links = [];
         res.render('url/form', {
-            site: site,
+            site: site.site,
+            current_user: site.current_user(req),
             featured_links: { top: links, last: links },
             tagline: "URL Shortening",
             show_error: show_error,
@@ -73,7 +75,8 @@ exports.info = function(req, res){
         link.link_id = link.link_id.toString(36);
         link.hits = link.hits || 0;
         res.render('url/info', {
-            site: site,
+            site: site.site,
+            current_user: site.current_user(req),
             tagline: "Short URL Information",
             link: link,
             host: req.headers.host,
@@ -116,7 +119,8 @@ exports.list = function(req, res){
             this.push({link_id: element.link_id.toString(36), link_url: element.link_url, created: element.created, hits: element.hits || 0});
         }, link_list);
         res.render('url/list', {
-            site: site,
+            site: site.site,
+            current_user: site.current_user(req),
             tagline: "List of Shortened URLs",
             link_list: link_list,
             show_next: ((current_count == limit)? true : false),

@@ -6,3 +6,4 @@ exports.link = require('./link_shortener');
 exports.paste = require('./paste');
 exports.pages = require('./pages');
 exports.search = require('./search');
+exports.users = require('./users');

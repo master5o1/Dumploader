@@ -4,7 +4,8 @@
 var express = require('express')
   , routes = require('./routes')
   , storage = require('./storage')
-;
+  , authentication = require('./authentication')
+  , passport = require('passport');
 
 var app = module.exports = express.createServer();
 
@@ -13,8 +14,12 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.set('view options', { pretty: true });
+  //app.set('view options', { pretty: true });
   app.use(express.bodyParser());
+  app.use(express.cookieParser());
+  app.use(express.session({ secret: 'my face' }));
+  app.use(passport.initialize());
+  app.use(passport.session());
   app.use(express.methodOverride());
   app.use(app.router);
   var oneYear = 31557600000;
@@ -29,14 +34,30 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
+// Authentication
+passport.use(authentication.localStrategy);
+passport.use(authentication.googleStrategy);
+passport.serializeUser(authentication.serializeUser);
+passport.deserializeUser(authentication.deserializeUser);
+
+app.get('/auth/google', passport.authenticate('google'));
+app.get('/auth/google/return', passport.authenticate('google', { successRedirect: '/', failureRedirect: '/login' }));
+app.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }));
+app.get('/login', authentication.login_route);
+app.get('/logout', function(req, res){ req.logOut(); res.redirect('/'); });
+
 // ROUTES:
 app.get('/info', function(req, res){ res.redirect('/'); });
 app.get('/view', function(req, res){ res.redirect('/'); });
 
+// Users
+app.get('/user/:username', routes.users.profile);
+app.get('/user/:username/check_username', routes.users.checkUserName);
+app.post('/user/:username/edit', routes.users.changeUserData);
+
 // Search
 app.get('/search/:skip?', routes.search.find);
 app.get('/random', routes.file.random);
-app.get('/username/:username', routes.search.username);
 
 // Files
 app.get('/', routes.file.form);

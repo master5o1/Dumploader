@@ -22,9 +22,13 @@ div.paste
 div.comments
     h2 Comments:
     form(action="/comment/#{file.id}?paste=true", method="post", enctype="multipart/form-data")
-        input(type="text", name="comment_author", value="anonymous")
-        input(type="text", name="comment_title", value="#{file.reply_title}")
-        textarea(type="text", name="comment_text", onfocus="this.style.height='5em'", onblur="this.style.height='auto'")
+        if typeof current_user.username == 'undefined'
+            span Posting as: anonymous
+        else
+            span Posting as: #{current_user.username}
+        br
+        input(type="hidden", name="comment_title", value="#{file.reply_title}")
+        textarea(type="text", name="comment_text", onfocus="this.style.height='5em'", onblur="this.style.height='auto'").
         input(type="submit", name="comment_submit", value="Submit")
     div(style="clear: both;")
     div(id="replies-#{file.id}", style="display: none;")

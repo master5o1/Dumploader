@@ -1,7 +1,8 @@
 var fs = require('fs');
 var storage = require('../storage');
+var user_storage = require('../user_storage');
 var url = require('url');
-var site = require('../site_strings').site;
+var site = require('../site_strings');
 var Mongolian = require("mongolian");
 /*
  * GET /paste
@@ -21,7 +22,8 @@ exports.form = function(req, res){
         'json',
     ];
     res.render('pastebin/form', {
-        site: site,
+        site: site.site,
+        current_user: site.current_user(req),
         tagline: 'Paste It Here',
         show_error: show_error,
         error: error,
@@ -45,11 +47,13 @@ exports.handler = function(req, res) {
             json: 'application/json',
         };
         var paste = {
-            author: req.body.paste_author,
             name: name + extension,
             text: req.body.pasted_text,
             contentType: contentTypes[req.body.pasted_type]
         }
+        var current_user = site.current_user(req);
+	    if (typeof current_user == 'undefined') { current_user = { _id: null } }
+        paste.author_id = current_user._id;
         storage.add_paste(paste, function(file){ 
             res.redirect('/info/' + file._id.bytes.toString('base64').replace('/','-'))
         });
@@ -79,23 +83,27 @@ exports.view = function(req, res) {
                     }, lines_data);
                     file.metadata.views++;
                     file.save();
-                    res.render('pastebin/view', {
-                        site: site,
-                        tagline: 'Lines Numbered For Your Viewing Pleasure',
-                        file_id: req.params.id,
-                        file_name: file.filename,
-                        lines: lines_data,
-                        paste_data: paste,
-                        file: {
-                            author: file.metadata.author,
-                            name: file.filename,
-                            id: file._id.bytes.toString('base64').replace('/','-'),
-                            reply_title: reply_title,
-                            comment_count: 0,
-                            comments: comments
-                        },
-                        host: req.headers.host
-                    })
+                    user_storage.user.findOne({_id: file.metadata.author_id}, function(err, user) {
+                        if (!user) { user = { username: 'anonymous' }; }
+                        res.render('pastebin/view', {
+                            site: site.site,
+                            current_user: site.current_user(req),
+                            tagline: 'Lines Numbered For Your Viewing Pleasure',
+                            file_id: req.params.id,
+                            file_name: file.filename,
+                            lines: lines_data,
+                            paste_data: paste,
+                            file: {
+                                author: user,
+                                name: file.filename,
+                                id: file._id.bytes.toString('base64').replace('/','-'),
+                                reply_title: reply_title,
+                                comment_count: 0,
+                                comments: comments
+                            },
+                            host: req.headers.host
+                        })
+                    });
                 });
             } else {
                 var stream = file.readStream()
@@ -111,23 +119,27 @@ exports.view = function(req, res) {
                     file.metadata.comments.reverse().forEach(function(comment_id, index, array) {
                         comment_ids.unshift(comment_id.toString('base64').replace('/','-'));
                     }, comments);
-                    res.render('pastebin/view', {
-                        site: site,
-                        tagline: 'Lines Numbered For Your Viewing Pleasure',
-                        file_id: req.params.id,
-                        file_name: file.filename,
-                        lines: lines_data,
-                        paste_data: paste,
-                        file: {
-                            author: file.metadata.author,
-                            name: file.filename,
-                            id: file._id.bytes.toString('base64').replace('/','-'),
-                            reply_title: reply_title,
-                            comment_count: comment_ids.length,
-                            comment_ids: JSON.stringify(comment_ids).replace(/\"/g,"'")
-                        },
-                        host: req.headers.host
-                    })
+                    user_storage.user.findOne({_id: file.metadata.author_id}, function(err, user) {
+                        if (!user) { user = { username: 'anonymous' }; }
+                        res.render('pastebin/view', {
+                            site: site.site,
+                            current_user: site.current_user(req),
+                            tagline: 'Lines Numbered For Your Viewing Pleasure',
+                            file_id: req.params.id,
+                            file_name: file.filename,
+                            lines: lines_data,
+                            paste_data: paste,
+                            file: {
+                                author: user,
+                                name: file.filename,
+                                id: file._id.bytes.toString('base64').replace('/','-'),
+                                reply_title: reply_title,
+                                comment_count: comment_ids.length,
+                                comment_ids: JSON.stringify(comment_ids).replace(/\"/g,"'")
+                            },
+                            host: req.headers.host
+                        })
+                    });
                 });
             }
         } else {
@@ -157,9 +169,55 @@ exports.comment = function(req, res) {
                 var name = ((req.body.comment_title != '') ? req.body.comment_title : 'untitled');
                 var comments = 0;
                 if (typeof file.metadata.comments != 'undefined') comments = file.metadata.comments.length;
+                var current_user = site.current_user(req);
+	    		if (typeof current_user == 'undefined') { current_user = { _id: null } }
                 var paste = {
-                    author: req.body.comment_author,
-                    name: name,// + '-comment-' + comments + '.' + req.params.id,
+                    author: 'author_something',
+                    author_id: current_user._id,
+                    name: name,
+                    text: req.body.comment_text,
+                    contentType: 'text/plain',
+                }
+                storage.add_paste(paste, function(comment_file){
+                    if (typeof file.metadata.comments == 'undefined') file.metadata.comments = [];
+					file.metadata.comments.push(comment_file._id.bytes.toString('base64'));
+                    file.save();
+                    if (typeof req.query.paste != 'undefined' && req.query.paste == 'true') {
+                        res.redirect('/paste/' + req.params.id + '/' + file.filename + '#' + comment_file._id.bytes.toString('base64').replace('/','-'))
+                    } else {
+                        res.redirect('/info/' + req.params.id + '/' + file.filename + '#' + comment_file._id.bytes.toString('base64').replace('/','-'))
+                    }
+                });
+            } else {
+                if (typeof req.query.paste != 'undefined' && req.query.paste == 'true') {
+                    res.redirect('/paste/' + req.params.id + '/' + file.filename + '?error=Something went wrong.')
+                } else {
+                    res.redirect('/info/' + req.params.id + '/' + file.filename + '?error=Something went wrong.')
+                }
+            }
+        });
+    }
+};
+ /*
+exports.comment = function(req, res) {
+    if (req.body.comment_text.length == 0) {
+        if (typeof req.query.paste != 'undefined' && req.query.paste == 'true') {
+            res.redirect('/paste/' + req.params.id + '?error=Try entering some text this time.')
+        } else {
+            res.redirect('/info/' + req.params.id + '?error=Try entering some text this time.')
+        }
+    } else {
+        var file_id = new Buffer(req.params.id.replace('-','/'), 'base64');
+        storage.gridfs.findOne({_id: new Mongolian.ObjectId(file_id)}, function (err, file) {
+            if (!err && file) {
+                var name = ((req.body.comment_title != '') ? req.body.comment_title : 'untitled');
+                var comments = 0;
+                if (typeof file.metadata.comments != 'undefined') comments = file.metadata.comments.length;
+                var current_user = site.current_user(req);
+	    		if (typeof current_user == 'undefined') { current_user = { _id: null } }
+                var paste = {
+                    author_id: current_user._id,
+                    name: name,
                     text: req.body.comment_text,
                     contentType: 'text/plain',
                 }
@@ -182,4 +240,4 @@ exports.comment = function(req, res) {
             }
         });
     }
-};
+};*/

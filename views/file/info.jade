@@ -10,13 +10,10 @@ dl.file-info
     dd= file.date
     dt Uploaded by:
     dd
-        if typeof file.author == 'undefined' || file.author == ''
-            if typeof file.author == 'undefined' || file.author == ''
-                a(href="/username/anonymous") anonymous
-            else
-                a(href="/username/#{file.author}") #{file.author}
+        if typeof file.author.username == 'undefined' || file.author.username == '' || file.author.username == 'anonymous'
+            | anonymous
         else
-            a(href="/username/#{file.author}") #{file.author}
+            a(href="/user/#{file.author.username}") #{file.author.displayName}
     dt MD5 sum:
     dd= file.md5
     dt Size:
@@ -44,9 +41,14 @@ dl.file-info
 div.comments
     h2 Comments:
     form(action="/comment/#{file.id}", method="post", enctype="multipart/form-data")
-        input(type="text", name="comment_author", value="anonymous")
-        input(type="text", name="comment_title", value="#{file.reply_title}")
-        textarea(type="text", name="comment_text", onfocus="this.style.height='5em'", onblur="this.style.height='auto'")
+        if typeof current_user.username == 'undefined'
+            span Posting as: anonymous
+        else
+            span Posting as: 
+                a(href="/user/#{current_user.username}") #{current_user.displayName}
+        br
+        input(type="hidden", name="comment_title", value="#{file.reply_title}")
+        textarea(type="text", name="comment_text", onfocus="this.style.height='5em'", onblur="this.style.height='auto'").
         input(type="submit", name="comment_submit", value="Submit")
     div(style="clear: both;")
     div(id="replies-#{file.id}", style="display: none;")
