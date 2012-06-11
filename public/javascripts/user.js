@@ -19,7 +19,7 @@ function checkUserName(displayed_username, changed_username) {
                         var description_input = document.getElementById('change_description');
                         username_input.setAttribute('onblur', "checkUserName('" + changed_username + "', this.value)");
                         displayName_input.setAttribute('onblur', "changeDisplayName('" + changed_username + "', this.value)");
-                        description_input.setAttribute('onblur', "changeDescription('" + changed_username + "', this.value)");
+                        description_input.setAttribute('onblur', "changeDescription('" + changed_username + "', this.value); checksize(this);");
                         var username_input_error = document.getElementById('change_username_error');
                         username_input_error.style.visibility = "visible";
                         username_input_error.style.color = "green";
@@ -75,7 +75,7 @@ function changeDescription(username, description) {
 }
 
 function checksize(obj) {
-    lines = obj.value.split('\n');
+    var lines = obj.value.split('\n');
     obj.style.height = (1+lines.length) + 'em';
 }
         

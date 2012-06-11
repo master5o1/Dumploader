@@ -1,17 +1,34 @@
 var site = require('../site_strings');
 var user_storage = require("../user_storage.js");
+var file_storage = require("../storage.js");
 
 exports.profile = function(req, res){
-    var username = req.params.username;
-    if (username == 'anonymous') { res.redirect('/'); }
+    var current_user = site.current_user(req);
+    var username = 'anonymous';
+    if (typeof current_user.username != 'undefined')
+        username = current_user.username;
+    if (typeof req.params.username != 'undefined')
+        username = req.params.username;
+    if (username == 'anonymous') { res.redirect('/'); return }
     user_storage.user.findOne({ username: username }, function (err, user) {
         if (user) {
-            res.render('users/profile', {
-                site: site.site,
-                current_user: site.current_user(req),
-                tagline: 'Profile: ' + user.displayName,
-                displayed_user: user
-            })
+            file_storage.db.collection('fs.files').find({ "filename": /^Re:.*/, "metadata.author_id": user._id, contentType: /^text\/.*/ }).sort({uploadDate: -1}).limit(5).toArray(function(err, comment_files) {
+                var comments = [];
+                comment_files.forEach(function(comment_file) {
+                    this.push(comment_file._id.bytes.toString('base64').replace('/','-'));
+                }, comments);
+                file_storage.db.collection('fs.files').find({ "metadata.author_id": user._id, contentType: /^image\/.*/ }).sort({uploadDate: -1}).limit(10).toArray(function(err, images) {
+                    res.render('users/profile', {
+                        site: site.site,
+                        current_user: site.current_user(req),
+                        tagline: 'Profile: ' + user.displayName,
+                        displayed_user: user,
+                        comments_count: comments.length,
+                        comments: JSON.stringify(comments).replace(/"/g,"'"),
+                        images: images,
+                    });
+                });
+            });
         } else {
             res.redirect('/');
         }

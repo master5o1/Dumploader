@@ -157,7 +157,7 @@ exports.info = function(req, res){
                 });
             } else {
                 file.metadata.comments.reverse().forEach(function(comment_id, index, array) {
-                    comment_ids.unshift(comment_id.replace('/','-'));
+                    comment_ids.unshift(comment_id.bytes.toString('base64').replace('/','-'));
                 }, comments);
                 res.render('file/info', {
                     site: site.site,
@@ -204,7 +204,7 @@ exports.view = function(req, res){
         res.setHeader('Cache-Control', 'public, max-age=' + (60*525600));
         res.setHeader('Content-Type', file.contentType);
         if (!json)
-			res.setHeader('Content-Length', file.length);
+            res.setHeader('Content-Length', file.length);
         if (!req.headers['if-modified-since']) {
             file.metadata.views++;
             file.save();
@@ -227,7 +227,7 @@ exports.view = function(req, res){
                         var paste_comments = [];
                         if (typeof file.metadata.comments != 'undefined') {
                             file.metadata.comments.forEach(function(com){
-                                this.push(com.toString('/','-'));
+                                this.push(com.bytes.toString('base64').replace('/','-'));
                             }, paste_comments);
                         }
                         var pasteUser = {

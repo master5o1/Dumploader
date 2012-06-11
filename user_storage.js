@@ -5,17 +5,19 @@ var server = new Mongolian;
 var db = server.db("dumploader");
 var users = db.collection("users");
 
-function User(user) {
+var User = function(user) {
     this._id = user._id,
     this.provider = user.provider;
     this.id = user.id;
     this.username = user.username;
     this.password = user.password;
+    this.usePassword = user.usePassword;
     this.displayName = user.displayName;
     this.name = user.name;
     this.emails = user.emails;
     this.description = user.description;
 }
+
 var UserValidPassword = function(password) {
     if (!this.password) return false; // password not set yet, can't login without one set.
     if (this.password == crypto.createHash('sha1').update(this.provider + password + this.id).digest('base64')) {
@@ -72,6 +74,7 @@ exports.user = {
                 new_user.id = search.id;
                 new_user.username = new_user.emails[0].value;//.split('@')[0];
                 new_user.password = null;
+                new_user.usePassword = false;
                 new_user.description = "";
                 users.insert(new_user);
                 users.findOne(search, function(error, found) {

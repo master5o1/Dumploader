@@ -18,8 +18,10 @@ div.user_profile
         dt.textareachange_user Description:
         dd.textareachange_user
             if displayed_user.id == current_user.id
-                textarea.change_user_detail#change_description(onkeypress="checksize(this)", onfocus="hide('change_description_error');", onblur="changeDescription('#{displayed_user.username}', this.value)")= displayed_user.description
-                span#change_description_error(style="color: red; font-size: 1.5em; vertical-align: top; display: inline-block; width: 1.0em; visibility: hidden;") &times;
+                textarea.change_user_detail#change_description(onkeypress="checksize(this)", onfocus="hide('change_description_error'); checksize(this);", onblur="changeDescription('#{displayed_user.username}', this.value); checksize(this);") #{displayed_user.description}
+                span(style="vertical-align: top; display: inline-block; width: 4.0em;")
+                    span#change_description_error(style="color: red; font-size: 2.0em; width: inherit; text-align: center; vertical-align: top; display: inline-block; visibility: hidden;") &times;
+                    //- span#change_description_counter(style="display: inline-block; margin-top: 2.0em; color: #888; font-size: 1.5em; width: inherit; text-align: center;") 1000
             else
                 p.change_user_detail(style="margin: 0;")
                     if (typeof displayed_user.description != 'undefined')
@@ -33,12 +35,26 @@ div.user_profile
             dl(style="margin: 0;")
                 dt Name:
                 dd #{displayed_user.name.givenName} #{displayed_user.name.middleName} #{displayed_user.name.familyName}
-                dt Emails:
+                if displayed_user.emails.length > 1
+                    dt(style="vertical-align: top;") Emails:
+                else
+                    dt Email:
                 dd
-                    each email in displayed_user.emails
+                    each email, i in displayed_user.emails
+                        if (i > 0)
+                            br
                         span #{email.value}
-    p either here
+                dt Identifier:
+                dd(style="font-size: 0.9em;")= displayed_user.id
     div.clearall
-p
-    | or here in its own box of sorts.
-    | That's where I'll put file lists.
+if comments_count > 0
+    div.featured-images.left(style="width: 80%; text-align: left; min-height: 350px; height: auto; max-hegith: auto;")
+        h2 Comments:
+        div(id="replies-comments", style="display: none;")
+        script getAndShow('comments', #{comments}, null, -1);
+div.featured-images.right(style="width: 154px; min-height: 350px;  height: auto; max-hegith: auto;")
+    h2 Images:
+    each image in images
+        a(href="/info/#{image._id.bytes.toString('base64').replace('/','-')}/#{image.filename}", title="#{image.filename}")
+            img(style="width: 150px; border: none; margin: 2px 0; padding: 0;", src="/thumb/#{image._id.bytes.toString('base64').replace('/','-')}/#{image.filename}")
+div.clearall

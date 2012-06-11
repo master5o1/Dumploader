@@ -117,7 +117,7 @@ exports.view = function(req, res) {
                     file.metadata.views++;
                     file.save();
                     file.metadata.comments.reverse().forEach(function(comment_id, index, array) {
-                        comment_ids.unshift(comment_id.toString('base64').replace('/','-'));
+                        comment_ids.unshift(comment_id.bytes.toString('base64').replace('/','-'));
                     }, comments);
                     user_storage.user.findOne({_id: file.metadata.author_id}, function(err, user) {
                         if (!user) { user = { username: 'anonymous' }; }
@@ -170,7 +170,7 @@ exports.comment = function(req, res) {
                 var comments = 0;
                 if (typeof file.metadata.comments != 'undefined') comments = file.metadata.comments.length;
                 var current_user = site.current_user(req);
-	    		if (typeof current_user == 'undefined') { current_user = { _id: null } }
+                if (typeof current_user == 'undefined') { current_user = { _id: null } }
                 var paste = {
                     author: 'author_something',
                     author_id: current_user._id,
@@ -180,7 +180,7 @@ exports.comment = function(req, res) {
                 }
                 storage.add_paste(paste, function(comment_file){
                     if (typeof file.metadata.comments == 'undefined') file.metadata.comments = [];
-					file.metadata.comments.push(comment_file._id.bytes.toString('base64'));
+                    file.metadata.comments.push(comment_file._id); // .bytes.toString('base64')
                     file.save();
                     if (typeof req.query.paste != 'undefined' && req.query.paste == 'true') {
                         res.redirect('/paste/' + req.params.id + '/' + file.filename + '#' + comment_file._id.bytes.toString('base64').replace('/','-'))

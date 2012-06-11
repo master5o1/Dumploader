@@ -20,8 +20,6 @@ exports.googleStrategy = new GoogleStrategy({
         realm: site.site.site_url + '/'
     },
     function(identifier, profile, done) {
-        console.log(identifier);
-        console.log(profile);
         storage.user.findOrCreate({ search: { provider: 'openId', id: identifier }, profile: profile}, function (err, user) {
             done(err, user);
         });

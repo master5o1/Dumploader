@@ -22,7 +22,7 @@ html
                             span.like_a anonymous
                             a#google_sign_in(href="/auth/google") Sign In
                         else
-                            a(href="/user/#{current_user.username}") #{current_user.displayName}
+                            a(href="/user") #{current_user.displayName}
                             a(href="/logout") Sign Out
             div.tagline
                 h2= tagline

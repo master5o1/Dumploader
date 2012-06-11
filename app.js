@@ -51,7 +51,7 @@ app.get('/info', function(req, res){ res.redirect('/'); });
 app.get('/view', function(req, res){ res.redirect('/'); });
 
 // Users
-app.get('/user/:username', routes.users.profile);
+app.get('/user/:username?', routes.users.profile);
 app.get('/user/:username/check_username', routes.users.checkUserName);
 app.post('/user/:username/edit', routes.users.changeUserData);
 

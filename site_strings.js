@@ -24,18 +24,23 @@ exports.current_user = function(req) {
 }
 
 // These aren't being used yet, but I'm planning it eventually.
-/*
-exports.permissions(user) {
-    var permissions = {
+exports.permissions = function(user) {
+    var perms = {
         anonymous: {
-            upload_max_file_size: '10M',
+            upload_max_file_size: 10*1024*1024,
             upload_content_types: [ /^[text|image]\/.+$/ ],
+            upload_expiration: 60*60*24,
         },
-        users: {
-            upload_max_file_size: '100M',
+        free: {
+            upload_max_file_size: 100*1024*1024,
             upload_content_types: [ '/^.+$/' ],
+            upload_expiration: 60*60*24*7,
+        },
+        premium: {
+            upload_max_file_size: 1024*1024*1024,
+            upload_content_types: [ '/^.+$/' ],
+            upload_expiration: null,
         }
     };
-    return permissions[user.user_type];
+    return perms[user.user_type];
 }
-*/
