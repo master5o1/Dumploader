@@ -8,6 +8,7 @@ var express = require('express')
   , passport = require('passport');
 
 var app = module.exports = express.createServer();
+var port = process.env.port || 1337;
 
 // Configuration
 
@@ -86,5 +87,5 @@ app.post('/comment/:id', routes.paste.comment);
 app.get('/page', routes.pages.index);
 app.get('/page/:name', routes.pages.run);
 
-app.listen(3000);
+app.listen(port);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
